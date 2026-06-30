@@ -116,3 +116,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+
+# Since you're using a custom User
+AUTH_USER_MODEL = "core.User"
+#isinipee error ya /accounts/login hio njo url default so we change
+LOGIN_URL = "login"

@@ -1,0 +1,1168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctor Dashboard - Smart Patient Calling System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        /* ====== CSS VARIABLES & THEME ====== */
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --primary-light: #eff6ff;
+            --accent: #0f172a;
+            --bg-body: #f8fafc;
+            --white: #ffffff;
+            --gray-50: #f8fafc;
+            --gray-100: #f1f5f9;
+            --gray-200: #e2e8f0;
+            --gray-400: #94a3b8;
+            --gray-500: #64748b;
+            --gray-600: #475569;
+            --gray-800: #1e293b;
+            --gray-900: #0f172a;
+            
+            --success: #10b981;
+            --success-light: #ecfdf5;
+            --warning: #f59e0b;
+            --warning-light: #fffbeb;
+            --danger: #ef4444;
+            --danger-light: #fef2f2;
+            --info: #0ea5e9;
+            
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
+            --shadow-md: 0 4px 6px -1px rgba(15, 23, 42, 0.05), 0 2px 4px -2px rgba(15, 23, 42, 0.05);
+            --shadow-lg: 0 10px 15px -3px rgba(15, 23, 42, 0.04), 0 4px 6px -4px rgba(15, 23, 42, 0.04);
+            --shadow-xl: 0 20px 25px -5px rgba(15, 23, 42, 0.05), 0 8px 10px -6px rgba(15, 23, 42, 0.02);
+            
+            --radius-sm: 10px;
+            --radius-md: 14px;
+            --radius-lg: 20px;
+            --sidebar-width: 260px;
+            --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* ====== GLOBAL RESET & BASE ====== */
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-body);
+            color: var(--gray-800);
+            overflow-x: hidden;
+            padding-top: 70px;
+        }
+
+        /* ====== TOP STICKY NAVIGATION ====== */
+        .navbar-custom {
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--gray-200);
+            height: 70px;
+            position: fixed;
+            top: 0;
+            right: 0;
+            left: 0;
+            z-index: 1030;
+            padding: 0 1.5rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .navbar-brand-custom {
+            font-weight: 800;
+            color: var(--gray-900);
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+
+        .navbar-brand-custom i {
+            color: var(--primary);
+            background: var(--primary-light);
+            padding: 8px;
+            border-radius: var(--radius-sm);
+        }
+
+        .navbar-subtitle {
+            font-size: 0.8rem;
+            color: var(--gray-500);
+            font-weight: 600;
+            background: var(--gray-100);
+            padding: 4px 12px;
+            border-radius: 20px;
+            margin-left: 10px;
+        }
+
+        .nav-icon-btn {
+            position: relative;
+            background: var(--gray-100);
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gray-500);
+            transition: var(--transition);
+        }
+
+        .nav-icon-btn:hover {
+            background: var(--primary-light);
+            color: var(--primary);
+            transform: scale(1.05);
+        }
+
+        .nav-icon-btn .badge-dot {
+            position: absolute;
+            top: 10px;
+            right: 11px;
+            width: 8px;
+            height: 8px;
+            background-color: var(--danger);
+            border-radius: 50%;
+            border: 2px solid var(--white);
+            animation: pulse-dot 2s infinite;
+        }
+
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(0.8); }
+        }
+
+        .profile-dropdown-toggle {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: none;
+            border: none;
+            padding: 4px 8px;
+            border-radius: var(--radius-sm);
+            transition: var(--transition);
+        }
+
+        .profile-dropdown-toggle:hover {
+            background: var(--gray-100);
+        }
+
+        .avatar-placeholder {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: var(--white);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.85rem;
+            box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25);
+        }
+
+        /* ====== STICKY LEFT SIDEBAR ====== */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: var(--white);
+            border-right: 1px solid var(--gray-200);
+            position: fixed;
+            top: 70px;
+            bottom: 0;
+            left: 0;
+            z-index: 1020;
+            padding: 1.5rem 1rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: transform 0.3s ease;
+            overflow-y: auto;
+        }
+
+        .sidebar::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background: var(--gray-200);
+            border-radius: 10px;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 0.8rem 1rem;
+            color: var(--gray-500);
+            font-weight: 600;
+            font-size: 0.95rem;
+            text-decoration: none;
+            border-radius: var(--radius-sm);
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .sidebar-link i {
+            font-size: 1.1rem;
+            width: 24px;
+            text-align: center;
+        }
+
+        .sidebar-link:hover {
+            background-color: var(--gray-100);
+            color: var(--gray-900);
+            transform: translateX(4px);
+        }
+
+        .sidebar-link.active {
+            background-color: var(--primary-light);
+            color: var(--primary);
+        }
+
+        .sidebar-link.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 20%;
+            height: 60%;
+            width: 3px;
+            background: var(--primary);
+            border-radius: 0 3px 3px 0;
+        }
+
+        .sidebar-link.logout-link:hover {
+            background-color: var(--danger-light);
+            color: var(--danger);
+        }
+
+        /* ====== MAIN CONTENT AREA WRAPPER ====== */
+        .main-wrapper {
+            margin-left: var(--sidebar-width);
+            padding: 2rem;
+            transition: margin-left 0.3s ease;
+        }
+
+        /* ====== WHITE CARD DESIGN SYSTEM ====== */
+        .card-custom {
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-sm);
+            padding: 1.5rem;
+            height: 100%;
+            transition: var(--transition);
+        }
+
+        .card-custom:hover {
+            box-shadow: var(--shadow-md);
+        }
+
+        /* Stats Component */
+        .stat-number {
+            font-size: 1.85rem;
+            font-weight: 800;
+            color: var(--gray-900);
+            line-height: 1.2;
+            margin-top: 0.25rem;
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--gray-500);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-icon-wrapper {
+            width: 48px;
+            height: 48px;
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+
+        .stat-trend {
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 20px;
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+        }
+
+        .stat-trend.up { background: var(--success-light); color: var(--success); }
+        .stat-trend.down { background: var(--danger-light); color: var(--danger); }
+
+        /* ====== CURRENT SERVING HIGHLIGHT ====== */
+        .card-now-serving {
+            border-left: 4px solid var(--primary);
+            background: linear-gradient(135deg, #ffffff 0%, #fafbff 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-now-serving::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, rgba(37, 99, 235, 0.03) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .badge-consultation {
+            background: rgba(37, 99, 235, 0.1);
+            color: var(--primary);
+            font-weight: 700;
+            padding: 0.5rem 1.2rem;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            letter-spacing: 0.3px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .badge-consultation .pulse-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: inline-block;
+            animation: pulse-consult 1.5s infinite;
+        }
+
+        @keyframes pulse-consult {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.4); }
+            70% { transform: scale(1.2); box-shadow: 0 0 0 6px rgba(37, 99, 235, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(37, 99, 235, 0); }
+        }
+
+        /* ====== ACTION CARDS ====== */
+        .action-card {
+            text-align: left;
+            padding: 1.25rem;
+            cursor: pointer;
+            border: 1px solid var(--gray-200);
+            transition: var(--transition);
+        }
+
+        .action-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--primary);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .action-icon-box {
+            font-size: 1.4rem;
+            color: var(--primary);
+            background: var(--primary-light);
+            width: 46px;
+            height: 46px;
+            border-radius: var(--radius-sm);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 0.75rem;
+            transition: var(--transition);
+        }
+
+        .action-card:hover .action-icon-box {
+            background: var(--primary);
+            color: var(--white);
+            transform: scale(1.05) rotate(-5deg);
+        }
+
+        .action-title {
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: var(--gray-900);
+            margin-bottom: 0.25rem;
+        }
+
+        .action-desc {
+            font-size: 0.8rem;
+            color: var(--gray-500);
+            margin-bottom: 0.75rem;
+        }
+
+        .btn-action-trigger {
+            background: var(--gray-100);
+            color: var(--gray-800);
+            font-weight: 700;
+            font-size: 0.8rem;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            width: 100%;
+            transition: var(--transition);
+        }
+
+        .action-card:hover .btn-action-trigger {
+            background: var(--primary);
+            color: var(--white);
+        }
+
+        /* ====== TABLE COMPONENT ====== */
+        .table-responsive-custom {
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            border: 1px solid var(--gray-200);
+        }
+
+        .table-custom {
+            margin-bottom: 0;
+        }
+
+        .table-custom th {
+            background: var(--gray-50);
+            color: var(--gray-600);
+            font-weight: 700;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 0.9rem 1.25rem;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .table-custom td {
+            padding: 0.9rem 1.25rem;
+            vertical-align: middle;
+            font-size: 0.9rem;
+            border-bottom: 1px solid var(--gray-100);
+        }
+
+        .table-custom tr:last-child td {
+            border-bottom: none;
+        }
+
+        .table-custom tr:hover td {
+            background: var(--gray-50);
+        }
+
+        .badge-priority {
+            font-weight: 700;
+            font-size: 0.7rem;
+            padding: 0.3rem 0.7rem;
+            border-radius: 6px;
+        }
+        .priority-high { background: var(--danger-light); color: var(--danger); }
+        .priority-normal { background: var(--primary-light); color: var(--primary); }
+        .priority-low { background: var(--gray-100); color: var(--gray-500); }
+
+        .btn-table-action {
+            background: var(--gray-100);
+            color: var(--gray-800);
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 0.3rem 0.8rem;
+            border-radius: 6px;
+            text-decoration: none;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .btn-table-action:hover {
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+
+        /* ====== REFERRAL CONTROL ====== */
+        .form-select-custom {
+            border: 1.5px solid var(--gray-200);
+            border-radius: 8px;
+            padding: 0.6rem 1rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--gray-800);
+            width: 100%;
+            transition: var(--transition);
+        }
+
+        .form-select-custom:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+            outline: none;
+        }
+
+        .btn-submit-custom {
+            background: var(--accent);
+            color: var(--white);
+            border: none;
+            font-weight: 700;
+            font-size: 0.9rem;
+            padding: 0.7rem 1.2rem;
+            border-radius: 8px;
+            width: 100%;
+            transition: var(--transition);
+        }
+
+        .btn-submit-custom:hover {
+            background: var(--primary);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+        }
+
+        /* ====== RIGHT PANEL ====== */
+        .summary-block {
+            padding-bottom: 1.25rem;
+            margin-bottom: 1.25rem;
+            border-bottom: 1px solid var(--gray-100);
+        }
+
+        .summary-block:last-child {
+            padding-bottom: 0;
+            margin-bottom: 0;
+            border-bottom: none;
+        }
+
+        .summary-block-title {
+            font-weight: 700;
+            font-size: 0.8rem;
+            color: var(--gray-900);
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .summary-block-title i { color: var(--primary); }
+
+        .schedule-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.4rem 0;
+            font-size: 0.85rem;
+            border-bottom: 1px solid var(--gray-50);
+        }
+
+        .schedule-item:last-child {
+            border-bottom: none;
+        }
+
+        .schedule-time {
+            font-weight: 700;
+            color: var(--primary);
+            background: var(--primary-light);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+        }
+
+        .sticky-notes {
+            background: var(--warning-light);
+            border-left: 3px solid var(--warning);
+            padding: 0.7rem 0.8rem;
+            border-radius: 0 8px 8px 0;
+            font-size: 0.8rem;
+            color: #78350f;
+            margin-bottom: 0.5rem;
+            line-height: 1.4;
+        }
+
+        .sticky-notes:last-child {
+            margin-bottom: 0;
+        }
+
+        .info-box {
+            background: var(--gray-50);
+            border: 1px solid var(--gray-200);
+            border-radius: 8px;
+            padding: 0.8rem;
+            font-size: 0.8rem;
+            color: var(--gray-600);
+            line-height: 1.5;
+        }
+
+        .info-box strong {
+            color: var(--gray-800);
+            display: block;
+            margin-bottom: 0.25rem;
+        }
+
+        /* ====== RESPONSIVE TOGGLE ====== */
+        .sidebar-toggle-trigger {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            color: var(--gray-800);
+            margin-right: 1rem;
+            padding: 4px 8px;
+        }
+
+        .sidebar-toggle-trigger:hover {
+            color: var(--primary);
+        }
+
+        @media (max-width: 1200px) {
+            .sidebar {
+                transform: translateX(-100%);
+                box-shadow: 2px 0 12px rgba(0,0,0,0.05);
+            }
+            .sidebar.active {
+                transform: translateX(0);
+                box-shadow: 2px 0 20px rgba(0,0,0,0.1);
+            }
+            .main-wrapper {
+                margin-left: 0;
+            }
+            .sidebar-toggle-trigger {
+                display: block;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-wrapper {
+                padding: 1rem;
+            }
+            .stat-number {
+                font-size: 1.5rem;
+            }
+            .action-card {
+                padding: 1rem;
+            }
+            .navbar-subtitle {
+                display: none !important;
+            }
+            .profile-dropdown-toggle span {
+                display: none !important;
+            }
+            .card-now-serving::after {
+                display: none;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .navbar-custom {
+                padding: 0 0.75rem;
+            }
+            .navbar-brand-custom {
+                font-size: 1rem;
+            }
+            .navbar-brand-custom span {
+                display: none;
+            }
+            .navbar-brand-custom i {
+                padding: 6px;
+                font-size: 1rem;
+            }
+            .main-wrapper {
+                padding: 0.75rem;
+            }
+            .card-custom {
+                padding: 1rem;
+            }
+            .stat-number {
+                font-size: 1.25rem;
+            }
+            .stat-icon-wrapper {
+                width: 40px;
+                height: 40px;
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ====== TOP NAVIGATION ====== -->
+    <nav class="navbar navbar-expand-lg navbar-custom">
+        <div class="d-flex align-items-center w-100 justify-content-between">
+            <div class="d-flex align-items-center">
+                <button class="sidebar-toggle-trigger" id="sidebarToggleBtn" aria-label="Toggle Sidebar">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <a class="navbar-brand-custom" href="#">
+                    <i class="fas fa-heartbeat"></i>
+                    <span>Smart Patient Calling</span>
+                </a>
+                <span class="navbar-subtitle">Doctor Panel</span>
+            </div>
+
+            <div class="d-flex align-items-center gap-2 gap-sm-3">
+                <button class="nav-icon-btn" aria-label="Notifications">
+                    <i class="fas fa-bell"></i>
+                    <span class="badge-dot"></span>
+                </button>
+
+                <div class="dropdown">
+                    <button class="profile-dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <div class="avatar-placeholder">DJ</div>
+                        <span class="d-none d-sm-inline" style="font-weight: 600; color: var(--gray-800); font-size: 0.9rem;">Dr. John</span>
+                        <i class="fas fa-chevron-down" style="font-size: 0.7rem; color: var(--gray-400);"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 mt-2 rounded-3" style="min-width: 200px;">
+                        <li><a class="dropdown-item py-2" href="#"><i class="fas fa-user-md me-2" style="width: 18px;"></i>Profile Details</a></li>
+                        <li><a class="dropdown-item py-2" href="#"><i class="fas fa-cog me-2" style="width: 18px;"></i>Room Settings</a></li>
+                        <li><hr class="dropdown-divider my-1"></li>
+                        <li><a class="dropdown-item py-2 text-danger" href="#"><i class="fas fa-sign-out-alt me-2" style="width: 18px;"></i>Logout</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ====== SIDEBAR ====== -->
+    <aside class="sidebar" id="layoutSidebar">
+        <ul class="sidebar-menu">
+            <li>
+                <a href="#" class="sidebar-link active">
+                    <i class="fas fa-columns"></i><span>Dashboard</span>
+                </a>
+            </li>
+            <li>
+                <a href="#" class="sidebar-link">
+                    <i class="fas fa-users-viewfinder"></i><span>Waiting Queue</span>
+                </a>
+            </li>
+            <li>
+                <a href="#" class="sidebar-link">
+                    <i class="fas fa-user-clock"></i><span>Current Patient</span>
+                </a>
+            </li>
+            <li>
+                <a href="#" class="sidebar-link">
+                    <i class="fas fa-notes-medical"></i><span>Patient History</span>
+                </a>
+            </li>
+            <li>
+                <a href="#" class="sidebar-link">
+                    <i class="fas fa-route"></i><span>Referrals</span>
+                </a>
+            </li>
+            <li>
+                <a href="#" class="sidebar-link">
+                    <i class="fas fa-chart-pie"></i><span>Reports</span>
+                </a>
+            </li>
+            <li>
+                <a href="#" class="sidebar-link">
+                    <i class="fas fa-id-card"></i><span>Profile</span>
+                </a>
+            </li>
+        </ul>
+
+        <ul class="sidebar-menu">
+            <li>
+                <a href="#" class="sidebar-link logout-link">
+                    <i class="fas fa-power-off"></i><span>Logout</span>
+                </a>
+            </li>
+        </ul>
+    </aside>
+
+    <!-- ====== MAIN CONTENT ====== -->
+    <main class="main-wrapper">
+        
+        <!-- Header -->
+        <div class="row align-items-center mb-4">
+            <div class="col-md-8">
+                <h1 style="font-weight: 800; color: var(--gray-900); font-size: 1.75rem; letter-spacing: -0.5px; margin-bottom: 0.25rem;">Good Morning, Dr. John</h1>
+                <div class="d-flex align-items-center gap-2" style="color: var(--gray-500); font-weight: 600; font-size: 0.9rem;">
+                    <span><i class="fas fa-door-open me-1" style="color: var(--primary);"></i> Room 5</span>
+                    <span style="color: var(--gray-400);">•</span>
+                    <span><i class="fas fa-stethoscope me-1" style="color: var(--primary);"></i> General Clinic</span>
+                </div>
+            </div>
+            <div class="col-md-4 text-md-end mt-2 mt-md-0">
+                <div style="background: var(--white); display: inline-block; padding: 0.5rem 1rem; border-radius: var(--radius-sm); border: 1px solid var(--gray-200); box-shadow: var(--shadow-sm); font-weight: 600; font-size: 0.85rem; color: var(--gray-600);">
+                    <i class="far fa-calendar-alt me-2" style="color: var(--primary);"></i> Tuesday, June 30, 2026
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="row g-3 mb-4">
+            <div class="col-xl-3 col-sm-6">
+                <div class="card-custom d-flex align-items-center justify-content-between">
+                    <div>
+                        <span class="stat-label">Waiting Patients</span>
+                        <div class="stat-number">18</div>
+                    </div>
+                    <div class="stat-icon-wrapper"><i class="fas fa-user-clock"></i></div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-sm-6">
+                <div class="card-custom d-flex align-items-center justify-content-between">
+                    <div>
+                        <span class="stat-label">Seen Today</span>
+                        <div class="stat-number">24</div>
+                        <span class="stat-trend up"><i class="fas fa-arrow-up"></i> +12%</span>
+                    </div>
+                    <div class="stat-icon-wrapper" style="background: var(--success-light); color: var(--success);"><i class="fas fa-user-check"></i></div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-sm-6">
+                <div class="card-custom d-flex align-items-center justify-content-between">
+                    <div>
+                        <span class="stat-label">Avg. Consultation</span>
+                        <div class="stat-number">12 <span style="font-size: 1rem; font-weight: 600; color: var(--gray-500);">mins</span></div>
+                    </div>
+                    <div class="stat-icon-wrapper" style="background: #f0fdfa; color: #14b8a6;"><i class="fas fa-stopwatch"></i></div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-sm-6">
+                <div class="card-custom d-flex align-items-center justify-content-between">
+                    <div>
+                        <span class="stat-label">Pending Referrals</span>
+                        <div class="stat-number">6</div>
+                    </div>
+                    <div class="stat-icon-wrapper" style="background: var(--warning-light); color: var(--warning);"><i class="fas fa-file-sharing"></i></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            
+            <!-- Left Column -->
+            <div class="col-xl-9 col-lg-8">
+                
+                <!-- Now Serving -->
+                <div class="card-custom card-now-serving mb-4">
+                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-3 pb-3 border-bottom" style="border-color: var(--gray-200);">
+                        <div>
+                            <span style="text-transform: uppercase; font-weight: 800; color: var(--primary); font-size: 0.7rem; letter-spacing: 0.5px; display: block; margin-bottom: 0.25rem;">Now Serving</span>
+                            <h2 style="font-weight: 800; color: var(--gray-900); font-size: 1.5rem; margin: 0;">Queue #<span style="color: var(--primary);">A205</span></h2>
+                        </div>
+                        <div>
+                            <span class="badge-consultation">
+                                <span class="pulse-dot"></span>
+                                In Consultation
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="row g-3">
+                        <div class="col-md-3 col-sm-6">
+                            <span style="font-size: 0.7rem; font-weight: 600; color: var(--gray-500); text-transform: uppercase; letter-spacing: 0.3px; display: block;">Patient</span>
+                            <span style="font-weight: 700; color: var(--gray-900); font-size: 0.95rem;">John Doe</span>
+                        </div>
+                        <div class="col-md-2 col-sm-6">
+                            <span style="font-size: 0.7rem; font-weight: 600; color: var(--gray-500); text-transform: uppercase; letter-spacing: 0.3px; display: block;">Age / Gender</span>
+                            <span style="font-weight: 700; color: var(--gray-900); font-size: 0.95rem;">34 Yrs • Male</span>
+                        </div>
+                        <div class="col-md-3 col-sm-6">
+                            <span style="font-size: 0.7rem; font-weight: 600; color: var(--gray-500); text-transform: uppercase; letter-spacing: 0.3px; display: block;">Department</span>
+                            <span style="font-weight: 700; color: var(--gray-900); font-size: 0.95rem;">General Clinic</span>
+                        </div>
+                        <div class="col-md-4 col-sm-6">
+                            <span style="font-size: 0.7rem; font-weight: 600; color: var(--gray-500); text-transform: uppercase; letter-spacing: 0.3px; display: block;">Arrival</span>
+                            <span style="font-weight: 700; color: var(--gray-900); font-size: 0.95rem;"><i class="far fa-clock me-1" style="color: var(--gray-400);"></i> 09:42 AM</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <h3 style="font-size: 0.8rem; font-weight: 800; color: var(--gray-900); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 1rem;">Patient Management Actions</h3>
+                <div class="row g-3 mb-4">
+                    <div class="col-xl-4 col-sm-6">
+                        <div class="card-custom action-card">
+                            <div>
+                                <div class="action-icon-box"><i class="fas fa-bullhorn"></i></div>
+                                <div class="action-title">Call Next Patient</div>
+                                <div class="action-desc">Call next patient into the consultation room</div>
+                            </div>
+                            <button class="btn-action-trigger"><i class="fas fa-phone me-1"></i> Call Next</button>
+                        </div>
+                    </div>
+                    <div class="col-xl-4 col-sm-6">
+                        <div class="card-custom action-card">
+                            <div>
+                                <div class="action-icon-box" style="background: var(--warning-light); color: var(--warning);"><i class="fas fa-undo-alt"></i></div>
+                                <div class="action-title">Recall Patient</div>
+                                <div class="action-desc">Recall current patient if they didn't respond</div>
+                            </div>
+                            <button class="btn-action-trigger">Recall</button>
+                        </div>
+                    </div>
+                    <div class="col-xl-4 col-sm-6">
+                        <div class="card-custom action-card">
+                            <div>
+                                <div class="action-icon-box" style="background: var(--danger-light); color: var(--danger);"><i class="fas fa-forward"></i></div>
+                                <div class="action-title">Skip Patient</div>
+                                <div class="action-desc">Skip and move to the next in queue</div>
+                            </div>
+                            <button class="btn-action-trigger">Skip</button>
+                        </div>
+                    </div>
+                    <div class="col-xl-4 col-sm-6">
+                        <div class="card-custom action-card">
+                            <div>
+                                <div class="action-icon-box" style="background: #f0fdfa; color: #14b8a6;"><i class="fas fa-share-nodes"></i></div>
+                                <div class="action-title">Refer Patient</div>
+                                <div class="action-desc">Refer to another department or specialist</div>
+                            </div>
+                            <button class="btn-action-trigger">Refer</button>
+                        </div>
+                    </div>
+                    <div class="col-xl-4 col-sm-6">
+                        <div class="card-custom action-card">
+                            <div>
+                                <div class="action-icon-box" style="background: var(--success-light); color: var(--success);"><i class="fas fa-check-circle"></i></div>
+                                <div class="action-title">Complete Case</div>
+                                <div class="action-desc">Finish consultation and close session</div>
+                            </div>
+                            <button class="btn-action-trigger">Complete</button>
+                        </div>
+                    </div>
+                    <div class="col-xl-4 col-sm-6">
+                        <div class="card-custom action-card">
+                            <div>
+                                <div class="action-icon-box" style="background: rgba(15, 23, 42, 0.05); color: var(--accent);"><i class="fas fa-clipboard-list"></i></div>
+                                <div class="action-title">Patient History</div>
+                                <div class="action-desc">View previous visits and records</div>
+                            </div>
+                            <button class="btn-action-trigger">View History</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Waiting Queue Table -->
+                <h3 style="font-size: 0.8rem; font-weight: 800; color: var(--gray-900); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 1rem;">Live Waiting Queue</h3>
+                <div class="table-responsive-custom">
+                    <table class="table table-custom align-middle">
+                        <thead>
+                            <tr>
+                                <th>Queue</th>
+                                <th>Patient</th>
+                                <th>Department</th>
+                                <th>Arrival</th>
+                                <th>Priority</th>
+                                <th>Status</th>
+                                <th class="text-center">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td style="font-weight: 800; color: var(--primary);">A206</td>
+                                <td style="font-weight: 700;">Mary Smith</td>
+                                <td style="color: var(--gray-500);">General Clinic</td>
+                                <td>09:45 AM</td>
+                                <td><span class="badge-priority priority-normal">Normal</span></td>
+                                <td><span style="color: var(--warning); font-weight: 700; font-size: 0.85rem;"><i class="fas fa-circle-notch fa-spin me-1"></i> Waiting</span></td>
+                                <td class="text-center"><a href="#" class="btn-table-action"><i class="fas fa-eye"></i> View</a></td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight: 800; color: var(--primary);">A207</td>
+                                <td style="font-weight: 700;">Peter Kim</td>
+                                <td style="color: var(--gray-500);">General Clinic</td>
+                                <td>09:52 AM</td>
+                                <td><span class="badge-priority priority-high">High</span></td>
+                                <td><span style="color: var(--warning); font-weight: 700; font-size: 0.85rem;"><i class="fas fa-circle-notch fa-spin me-1"></i> Waiting</span></td>
+                                <td class="text-center"><a href="#" class="btn-table-action"><i class="fas fa-eye"></i> View</a></td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight: 800; color: var(--primary);">A208</td>
+                                <td style="font-weight: 700;">Alice Johnson</td>
+                                <td style="color: var(--gray-500);">General Clinic</td>
+                                <td>10:05 AM</td>
+                                <td><span class="badge-priority priority-low">Low</span></td>
+                                <td><span style="color: var(--warning); font-weight: 700; font-size: 0.85rem;"><i class="fas fa-circle-notch fa-spin me-1"></i> Waiting</span></td>
+                                <td class="text-center"><a href="#" class="btn-table-action"><i class="fas fa-eye"></i> View</a></td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight: 800; color: var(--primary);">A209</td>
+                                <td style="font-weight: 700;">Sarah Williams</td>
+                                <td style="color: var(--gray-500);">General Clinic</td>
+                                <td>10:12 AM</td>
+                                <td><span class="badge-priority priority-normal">Normal</span></td>
+                                <td><span style="color: var(--warning); font-weight: 700; font-size: 0.85rem;"><i class="fas fa-circle-notch fa-spin me-1"></i> Waiting</span></td>
+                                <td class="text-center"><a href="#" class="btn-table-action"><i class="fas fa-eye"></i> View</a></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+
+            <!-- Right Column -->
+            <div class="col-xl-3 col-lg-4">
+                
+                <!-- Referral Control -->
+                <div class="card-custom mb-4">
+                    <h3 style="font-size: 0.8rem; font-weight: 800; color: var(--gray-900); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 1rem;">
+                        <i class="fas fa-paper-plane me-2" style="color: var(--primary);"></i>Quick Referral
+                    </h3>
+                    <div class="mb-3">
+                        <label style="font-size: 0.7rem; font-weight: 700; color: var(--gray-500); text-transform: uppercase; letter-spacing: 0.3px; display: block; margin-bottom: 0.25rem;">Refer Patient To</label>
+                        <select class="form-select-custom">
+                            <option>General Clinic</option>
+                            <option>Laboratory</option>
+                            <option>Pharmacy</option>
+                            <option>Radiology</option>
+                            <option>Specialist Clinic</option>
+                            <option>Emergency</option>
+                        </select>
+                    </div>
+                    <button class="btn-submit-custom"><i class="fas fa-send me-2"></i>Send Referral</button>
+                </div>
+
+                <!-- Summary Panel -->
+                <div class="card-custom">
+                    
+                    <div class="summary-block">
+                        <div class="summary-block-title">
+                            <i class="fas fa-calendar-day"></i>
+                            <span>Today's Schedule</span>
+                        </div>
+                        <div class="schedule-item">
+                            <span style="font-weight: 600;">Clinical Rounds</span>
+                            <span class="schedule-time">08:00 AM</span>
+                        </div>
+                        <div class="schedule-item">
+                            <span style="font-weight: 600;">Outpatient Session A</span>
+                            <span class="schedule-time">10:00 AM</span>
+                        </div>
+                        <div class="schedule-item">
+                            <span style="font-weight: 600;">Department Sync</span>
+                            <span class="schedule-time">03:30 PM</span>
+                        </div>
+                    </div>
+
+                    <div class="summary-block">
+                        <div class="summary-block-title">
+                            <i class="fas fa-sticky-note"></i>
+                            <span>Quick Notes</span>
+                        </div>
+                        <div class="sticky-notes">
+                            Follow up on labs ordered for yesterday's observation cases in Ward B.
+                        </div>
+                        <div class="sticky-notes">
+                            Radiology imaging server backup starts at 4 PM today.
+                        </div>
+                    </div>
+
+                    <div class="summary-block" style="border-bottom: none; margin-bottom: 0; padding-bottom: 0;">
+                        <div class="summary-block-title">
+                            <i class="fas fa-info-circle"></i>
+                            <span>Room Status</span>
+                        </div>
+                        <div class="info-box">
+                            <strong><i class="fas fa-desktop me-1"></i> Display Running</strong>
+                            Room 5 calling system is synchronized with the central queue. All audio and visual outputs are active.
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Sidebar toggle
+            const sidebarToggle = document.getElementById('sidebarToggleBtn');
+            const sidebar = document.getElementById('layoutSidebar');
+
+            if (sidebarToggle && sidebar) {
+                sidebarToggle.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    sidebar.classList.toggle('active');
+                });
+            }
+
+            // Close sidebar on outside click (mobile)
+            document.addEventListener('click', function(event) {
+                const isClickInsideSidebar = sidebar.contains(event.target);
+                const isClickOnToggle = sidebarToggle.contains(event.target);
+                
+                if (!isClickInsideSidebar && !isClickOnToggle && window.innerWidth <= 1200) {
+                    sidebar.classList.remove('active');
+                }
+            });
+
+            // Auto-close sidebar on resize to desktop
+            window.addEventListener('resize', function() {
+                if (window.innerWidth > 1200) {
+                    sidebar.classList.remove('active');
+                }
+            });
+
+            // Action card button clicks (demo)
+            document.querySelectorAll('.btn-action-trigger').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const card = this.closest('.action-card');
+                    if (card) {
+                        card.style.transition = 'all 0.1s ease';
+                        card.style.transform = 'scale(0.97)';
+                        setTimeout(() => {
+                            card.style.transform = '';
+                        }, 150);
+                    }
+                });
+            });
+
+            // Table row view button clicks (demo)
+            document.querySelectorAll('.btn-table-action').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const row = this.closest('tr');
+                    if (row) {
+                        row.style.backgroundColor = 'var(--primary-light)';
+                        setTimeout(() => {
+                            row.style.backgroundColor = '';
+                        }, 500);
+                    }
+                });
+            });
+
+            // Referral submit button
+            document.querySelector('.btn-submit-custom')?.addEventListener('click', function() {
+                const originalText = this.innerHTML;
+                this.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Sending...';
+                this.disabled = true;
+                setTimeout(() => {
+                    this.innerHTML = '<i class="fas fa-check me-2"></i>Sent!';
+                    setTimeout(() => {
+                        this.innerHTML = originalText;
+                        this.disabled = false;
+                    }, 1500);
+                }, 1000);
+            });
+
+            // "Call Next" button special effect
+            document.querySelector('.action-card .btn-action-trigger')?.addEventListener('click', function() {
+                if (this.textContent.includes('Call Next')) {
+                    this.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Calling...';
+                    setTimeout(() => {
+                        this.innerHTML = '<i class="fas fa-check me-1"></i> Called!';
+                        setTimeout(() => {
+                            this.innerHTML = '<i class="fas fa-phone me-1"></i> Call Next';
+                        }, 1500);
+                    }, 800);
+                }
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Receptionist Dashboard - Smart Patient Calling System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        /* ====== CSS VARIABLES ====== */
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --primary-light: #eff6ff;
+            --secondary: #0ea5e9;
+            --bg-body: #f8fafc;
+            --white: #ffffff;
+            --gray-100: #f1f5f9;
+            --gray-200: #e2e8f0;
+            --gray-500: #64748b;
+            --gray-800: #1e293b;
+            --gray-900: #0f172a;
+            
+            --success: #10b981;
+            --success-light: #ecfdf5;
+            --warning: #f59e0b;
+            --warning-light: #fffbeb;
+            --danger: #ef4444;
+            
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
+            --shadow-md: 0 4px 6px -1px rgba(15, 23, 42, 0.05), 0 2px 4px -2px rgba(15, 23, 42, 0.05);
+            --shadow-lg: 0 10px 15px -3px rgba(15, 23, 42, 0.04), 0 4px 6px -4px rgba(15, 23, 42, 0.04);
+            
+            --radius-sm: 10px;
+            --radius-md: 14px;
+            --radius-lg: 20px;
+            --sidebar-width: 260px;
+            --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* ====== GLOBAL RESET & BASE ====== */
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-body);
+            color: var(--gray-800);
+            overflow-x: hidden;
+        }
+
+        /* ====== TOP NAVIGATION ====== */
+        .navbar-custom {
+            background-color: var(--white);
+            border-bottom: 1px solid var(--gray-200);
+            height: 70px;
+            position: fixed;
+            top: 0;
+            right: 0;
+            left: 0;
+            z-index: 1030;
+            padding: 0 1.5rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .navbar-brand-custom {
+            font-weight: 800;
+            color: var(--gray-900);
+            font-size: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+        .navbar-brand-custom i {
+            color: var(--primary);
+            background: var(--primary-light);
+            padding: 8px;
+            border-radius: var(--radius-sm);
+        }
+
+        .nav-icon-btn {
+            position: relative;
+            background: var(--gray-100);
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gray-500);
+            transition: var(--transition);
+        }
+
+        .nav-icon-btn:hover {
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+
+        .nav-icon-btn .badge-dot {
+            position: absolute;
+            top: 10px;
+            right: 11px;
+            width: 8px;
+            height: 8px;
+            background-color: var(--danger);
+            border-radius: 50%;
+            border: 2px solid var(--white);
+        }
+
+        .profile-dropdown-toggle {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: none;
+            border: none;
+            padding: 4px 8px;
+            border-radius: var(--radius-sm);
+            transition: var(--transition);
+        }
+
+        .profile-dropdown-toggle:hover {
+            background: var(--gray-100);
+        }
+
+        .avatar-placeholder {
+            width: 36px;
+            height: 36px;
+            background-color: var(--primary);
+            color: var(--white);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+
+        /* ====== SIDEBAR ====== */
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: var(--white);
+            border-right: 1px solid var(--gray-200);
+            position: fixed;
+            top: 70px;
+            bottom: 0;
+            left: 0;
+            z-index: 1020;
+            padding: 1.5rem 1rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: transform 0.3s ease;
+            overflow-y: auto;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 0.8rem 1rem;
+            color: var(--gray-500);
+            font-weight: 600;
+            font-size: 0.95rem;
+            text-decoration: none;
+            border-radius: var(--radius-sm);
+            transition: var(--transition);
+        }
+
+        .sidebar-link i {
+            font-size: 1.1rem;
+            width: 24px;
+            text-align: center;
+        }
+
+        .sidebar-link:hover {
+            background-color: var(--gray-100);
+            color: var(--gray-900);
+        }
+
+        .sidebar-link.active {
+            background-color: var(--primary-light);
+            color: var(--primary);
+        }
+
+        .sidebar-link.logout-link:hover {
+            background-color: #fef2f2;
+            color: var(--danger);
+        }
+
+        /* ====== MAIN WRAPPER LAYER ====== */
+        .main-wrapper {
+            margin-top: 70px;
+            margin-left: var(--sidebar-width);
+            padding: 2rem;
+            transition: margin-left 0.3s ease;
+        }
+
+        /* ====== CARD COMPONENT STYLES ====== */
+        .card-custom {
+            background-color: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-sm);
+            padding: 1.5rem;
+            height: 100%;
+            transition: var(--transition);
+        }
+
+        .card-custom:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+
+        /* Stats Cards Specific */
+        .stat-card {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--gray-900);
+            line-height: 1.2;
+            margin-top: 0.25rem;
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--gray-500);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-icon {
+            width: 54px;
+            height: 54px;
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .stat-waiting .stat-icon { background: var(--warning-light); color: var(--warning); }
+        .stat-called .stat-icon { background: var(--primary-light); color: var(--primary); }
+        .stat-completed .stat-icon { background: var(--success-light); color: var(--success); }
+        .stat-doctors .stat-icon { background: #f0fdfa; color: #14b8a6; }
+
+        /* Quick Actions Cards Specific */
+        .action-card {
+            text-align: center;
+            padding: 2rem 1.5rem;
+        }
+
+        .action-icon {
+            font-size: 2.2rem;
+            color: var(--primary);
+            background: var(--primary-light);
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.25rem;
+            transition: var(--transition);
+        }
+
+        .action-card:hover .action-icon {
+            background: var(--primary);
+            color: var(--white);
+            transform: scale(1.05);
+        }
+
+        .action-title {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--gray-900);
+            margin-bottom: 0.5rem;
+        }
+
+        .action-desc {
+            font-size: 0.85rem;
+            color: var(--gray-500);
+            margin-bottom: 1.5rem;
+            height: 40px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .btn-action-custom {
+            background-color: var(--gray-100);
+            color: var(--gray-800);
+            font-weight: 600;
+            font-size: 0.9rem;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: var(--radius-sm);
+            width: 100%;
+            transition: var(--transition);
+        }
+
+        .action-card:hover .btn-action-custom {
+            background-color: var(--primary);
+            color: var(--white);
+        }
+
+        /* ====== TABLE STYLES ====== */
+        .table-responsive-custom {
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            border: 1px solid var(--gray-200);
+        }
+
+        .table-custom {
+            margin-bottom: 0;
+            background-color: var(--white);
+        }
+
+        .table-custom th {
+            background-color: var(--gray-100);
+            color: var(--gray-800);
+            font-weight: 700;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 1rem 1.25rem;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .table-custom td {
+            padding: 1rem 1.25rem;
+            vertical-align: middle;
+            color: var(--gray-800);
+            font-size: 0.95rem;
+            border-bottom: 1px solid var(--gray-100);
+        }
+
+        .table-custom tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Badges Override */
+        .badge-status {
+            font-weight: 600;
+            font-size: 0.8rem;
+            padding: 0.4rem 0.75rem;
+            border-radius: 50px;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .badge-waiting { background-color: var(--warning-light); color: #b45309; }
+        .badge-called { background-color: var(--primary-light); color: var(--primary-dark); }
+        .badge-completed { background-color: var(--success-light); color: #047857; }
+
+        .btn-view-custom {
+            background-color: var(--gray-100);
+            color: var(--gray-800);
+            font-size: 0.85rem;
+            font-weight: 600;
+            padding: 0.35rem 0.85rem;
+            border-radius: 6px;
+            text-decoration: none;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .btn-view-custom:hover {
+            background-color: var(--primary-light);
+            color: var(--primary);
+        }
+
+        /* ====== RIGHT PANEL ELEMENTS ====== */
+        .summary-section {
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.25rem;
+            border-bottom: 1px solid var(--gray-100);
+        }
+
+        .summary-section:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        .summary-title {
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: var(--gray-900);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .summary-title i {
+            color: var(--primary);
+        }
+
+        /* Lists inside summary panel */
+        .appointment-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            font-size: 0.88rem;
+            border-bottom: 1px solid var(--gray-100);
+        }
+
+        .appointment-item:last-child {
+            border-bottom: none;
+        }
+
+        .appointment-time {
+            font-weight: 700;
+            color: var(--primary);
+            background-color: var(--primary-light);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+        }
+
+        .note-bubble {
+            background-color: var(--gray-100);
+            border-left: 3px solid var(--secondary);
+            padding: 0.75rem;
+            border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+            font-size: 0.85rem;
+            color: var(--gray-800);
+            margin-bottom: 0.5rem;
+        }
+
+        .announcement-card {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            color: var(--white);
+            padding: 1rem;
+            border-radius: var(--radius-sm);
+            font-size: 0.85rem;
+        }
+
+        /* ====== RESPONSIVE LAYOUT TOGGLES ====== */
+        .sidebar-toggle-btn {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.25rem;
+            color: var(--gray-800);
+            margin-right: 1rem;
+            padding: 4px 8px;
+        }
+
+        .sidebar-toggle-btn:hover {
+            color: var(--primary);
+        }
+
+        @media (max-width: 1200px) {
+            .sidebar {
+                transform: translateX(-100%);
+                box-shadow: 2px 0 8px rgba(0,0,0,0.05);
+            }
+            .sidebar.active {
+                transform: translateX(0);
+                box-shadow: 2px 0 16px rgba(0,0,0,0.1);
+            }
+            .main-wrapper {
+                margin-left: 0;
+            }
+            .sidebar-toggle-btn {
+                display: block;
+            }
+            .navbar-brand-custom span {
+                font-size: 1rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-wrapper {
+                padding: 1rem;
+            }
+            .stat-number {
+                font-size: 1.5rem;
+            }
+            .action-card {
+                padding: 1.5rem 1rem;
+            }
+            .action-icon {
+                width: 56px;
+                height: 56px;
+                font-size: 1.8rem;
+            }
+            .table-custom th,
+            .table-custom td {
+                padding: 0.75rem 1rem;
+                font-size: 0.85rem;
+            }
+            .profile-dropdown-toggle span {
+                display: none !important;
+            }
+            .navbar-brand-custom span {
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .navbar-custom {
+                padding: 0 0.75rem;
+            }
+            .main-wrapper {
+                padding: 0.75rem;
+            }
+            .stat-number {
+                font-size: 1.25rem;
+            }
+            .stat-icon {
+                width: 42px;
+                height: 42px;
+                font-size: 1.2rem;
+            }
+            .card-custom {
+                padding: 1rem;
+            }
+            .action-desc {
+                height: auto;
+                -webkit-line-clamp: 3;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-custom">
+        <div class="d-flex align-items-center w-100 justify-content-between">
+            <div class="d-flex align-items-center">
+                <button class="sidebar-toggle-btn" id="sidebarToggle" aria-label="Toggle Sidebar">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <a class="navbar-brand-custom" href="#">
+                    <i class="fas fa-heartbeat"></i>
+                    <span>Smart Patient Calling System</span>
+                </a>
+            </div>
+
+            <div class="d-flex align-items-center gap-2 gap-sm-3">
+                <button class="nav-icon-btn" aria-label="Notifications">
+                    <i class="fas fa-bell"></i>
+                    <span class="badge-dot"></span>
+                </button>
+
+                <div class="dropdown">
+                    <button class="profile-dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <div class="avatar-placeholder">JA</div>
+                        <span class="d-none d-sm-inline fw-600" style="color: var(--gray-800); font-size: 0.9rem;">Jane Adams</span>
+                        <i class="fas fa-chevron-down" style="font-size: 0.75rem; color: var(--gray-500);"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 mt-2 rounded-3" style="min-width: 200px;">
+                        <li><a class="dropdown-item py-2" href="#"><i class="fas fa-user-circle me-2" style="width: 20px;"></i>My Profile</a></li>
+                        <li><a class="dropdown-item py-2" href="#"><i class="fas fa-cog me-2" style="width: 20px;"></i>Account Settings</a></li>
+                        <li><hr class="dropdown-divider my-1"></li>
+                        <li><a class="dropdown-item py-2 text-danger" href="#"><i class="fas fa-sign-out-alt me-2" style="width: 20px;"></i>Logout</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <aside class="sidebar" id="sidebarLayout">
+        <ul class="sidebar-menu">
+            <li>
+                <a href="#" class="sidebar-link active">
+                    <i class="fas fa-th-large"></i><span>Dashboard</span>
+                </a>
+            </li>
+            <li>
+                <a href="#" class="sidebar-link">
+                    <i class="fas fa-user-injured"></i><span>Patients</span>
+                </a>
+            </li>
+            <li>
+                <a href="#" class="sidebar-link">
+                    <i class="fas fa-calendar-plus"></i><span>Book Queue Session</span>
+                </a>
+            </li>
+            <li>
+                <a href="#" class="sidebar-link">
+                    <i class="fas fa-clock"></i><span>Waiting Queue</span>
+                </a>
+            </li>
+            <li>
+                <a href="#" class="sidebar-link">
+                    <i class="fas fa-calendar-day"></i><span>Today's Patients</span>
+                </a>
+            </li>
+            <li>
+                <a href="#" class="sidebar-link">
+                    <i class="fas fa-history"></i><span>Queue History</span>
+                </a>
+            </li>
+            <li>
+                <a href="#" class="sidebar-link">
+                    <i class="fas fa-sliders-h"></i><span>Settings</span>
+                </a>
+            </li>
+        </ul>
+
+        <ul class="sidebar-menu">
+            <li>
+                <a href="#" class="sidebar-link logout-link">
+                    <i class="fas fa-sign-out-alt"></i><span>Logout</span>
+                </a>
+            </li>
+        </ul>
+    </aside>
+
+    <main class="main-wrapper">
+        
+        <div class="row align-items-center mb-4 pb-2">
+            <div class="col-md-10">
+                <h1 style="font-weight: 800; color: var(--gray-900); font-size: 1.85rem; letter-spacing: -0.5px; margin-bottom: 0.25rem;">Reception Dashboard</h1>
+                <p style="color: var(--gray-500); font-weight: 500; margin: 0;" id="currentDateDisplay">Tuesday, June 30, 2026</p>
+            </div>
+        </div>
+
+        <div class="row g-3 mb-4">
+            <div class="col-xl-3 col-sm-6">
+                <div class="card-custom stat-card stat-waiting">
+                    <div>
+                        <span class="stat-label">Patients Waiting</span>
+                        <div class="stat-number">26</div>
+                    </div>
+                    <div class="stat-icon"><i class="fas fa-user-clock"></i></div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-sm-6">
+                <div class="card-custom stat-card stat-called">
+                    <div>
+                        <span class="stat-label">Patients Called</span>
+                        <div class="stat-number">9</div>
+                    </div>
+                    <div class="stat-icon"><i class="fas fa-bullhorn"></i></div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-sm-6">
+                <div class="card-custom stat-card stat-completed">
+                    <div>
+                        <span class="stat-label">Completed Today</span>
+                        <div class="stat-number">18</div>
+                    </div>
+                    <div class="stat-icon"><i class="fas fa-check-double"></i></div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-sm-6">
+                <div class="card-custom stat-card stat-doctors">
+                    <div>
+                        <span class="stat-label">Doctors Available</span>
+                        <div class="stat-number">5</div>
+                    </div>
+                    <div class="stat-icon"><i class="fas fa-user-md"></i></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            
+            <div class="col-xl-9">
+                
+                <h2 style="font-size: 1.1rem; font-weight: 700; color: var(--gray-900); margin-bottom: 1rem;">Quick Actions Matrix</h2>
+                <div class="row g-3 mb-4">
+                    <div class="col-md-3 col-sm-6">
+                        <div class="card-custom action-card">
+                            <div class="action-icon"><i class="fas fa-search"></i></div>
+                            <div class="action-title">Search Patient</div>
+                            <div class="action-desc">Search existing records before booking a queue session.</div>
+                            <button class="btn-action-custom">Search Patient</button>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-6">
+                        <div class="card-custom action-card">
+                            <div class="action-icon"><i class="fas fa-user-plus"></i></div>
+                            <div class="action-title">Register Patient</div>
+                            <div class="action-desc">Register a brand new patient identity profile.</div>
+                            <button class="btn-action-custom">Register Patient</button>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-6">
+                        <div class="card-custom action-card">
+                            <div class="action-icon"><i class="fas fa-calendar-check"></i></div>
+                            <div class="action-title">Book Queue Session</div>
+                            <div class="action-desc">Assign an existing patient directly to today's active live queue.</div>
+                            <button class="btn-action-custom">Book Session</button>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-6">
+                        <div class="card-custom action-card">
+                            <div class="action-icon"><i class="fas fa-users"></i></div>
+                            <div class="action-title">Waiting Queue</div>
+                            <div class="action-desc">View live patient allocations currently waiting inside halls.</div>
+                            <button class="btn-action-custom">View Queue</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <h2 style="font-size: 1.1rem; font-weight: 700; color: var(--gray-900); margin: 0;">Recent Activity Log</h2>
+                    <a href="#" class="btn btn-sm btn-link text-primary fw-600 text-decoration-none" style="font-weight: 600;">View All Active Queue Entries</a>
+                </div>
+                
+                <div class="table-responsive-custom">
+                    <table class="table table-custom align-middle">
+                        <thead>
+                            <tr>
+                                <th>Queue Number</th>
+                                <th>Patient Name</th>
+                                <th>Department</th>
+                                <th>Arrival Time</th>
+                                <th>Status</th>
+                                <th class="text-center">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td style="font-weight: 700; color: var(--primary);">A201</td>
+                                <td style="font-weight: 600;">John Doe</td>
+                                <td>General Clinic</td>
+                                <td style="color: var(--gray-500);">09:20 AM</td>
+                                <td><span class="badge-status badge-waiting"><i class="fas fa-spinner fa-spin" style="font-size: 0.8rem;"></i> Waiting</span></td>
+                                <td class="text-center"><a href="#" class="btn-view-custom">View</a></td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight: 700; color: var(--primary);">A202</td>
+                                <td style="font-weight: 600;">Mary Smith</td>
+                                <td>Dental Care</td>
+                                <td style="color: var(--gray-500);">09:35 AM</td>
+                                <td><span class="badge-status badge-called"><i class="fas fa-volume-up" style="font-size: 0.8rem;"></i> Called</span></td>
+                                <td class="text-center"><a href="#" class="btn-view-custom">View</a></td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight: 700; color: var(--primary);">A203</td>
+                                <td style="font-weight: 600;">Peter Kim</td>
+                                <td>Laboratory</td>
+                                <td style="color: var(--gray-500);">09:45 AM</td>
+                                <td><span class="badge-status badge-completed"><i class="fas fa-check-circle" style="font-size: 0.8rem;"></i> Completed</span></td>
+                                <td class="text-center"><a href="#" class="btn-view-custom">View</a></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+
+            <div class="col-xl-3">
+                <div class="card-custom">
+                    <h3 style="font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: var(--gray-500); margin-bottom: 1.5rem;">Today's Summary</h3>
+                    
+                    <div class="summary-section">
+                        <div class="summary-title">
+                            <i class="fas fa-calendar-alt"></i>
+                            <span>Today's Appointments</span>
+                        </div>
+                        <div class="appointment-item">
+                            <span style="font-weight: 500;">Dr. Robert Chen</span>
+                            <span class="appointment-time">10:30 AM</span>
+                        </div>
+                        <div class="appointment-item">
+                            <span style="font-weight: 500;">Dr. Sarah Jenkins</span>
+                            <span class="appointment-time">11:15 AM</span>
+                        </div>
+                        <div class="appointment-item">
+                            <span style="font-weight: 500;">Dr. Alan Turing</span>
+                            <span class="appointment-time">02:00 PM</span>
+                        </div>
+                    </div>
+
+                    <div class="summary-section">
+                        <div class="summary-title">
+                            <i class="fas fa-sticky-note"></i>
+                            <span>Quick Desk Notes</span>
+                        </div>
+                        <div class="note-bubble">
+                            Shift handoff checklist: Confirm Room 4 audio output monitor is active.
+                        </div>
+                        <div class="note-bubble">
+                            Dental department extended queue triage operations until 05:30 PM.
+                        </div>
+                    </div>
+
+                    <div class="summary-section">
+                        <div class="summary-title">
+                            <i class="fas fa-bullhorn"></i>
+                            <span>Hospital Notice</span>
+                        </div>
+                        <div class="announcement-card">
+                            <strong class="d-block mb-1"><i class="fas fa-info-circle text-info me-1" style="color: #60a5fa;"></i> System Maintenance Notice</strong>
+                            Core network server sync checks take place tonight at 11:59 PM. Internal client operations are unaffected.
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const sidebarToggle = document.getElementById('sidebarToggle');
+            const sidebarLayout = document.getElementById('sidebarLayout');
+
+            if (sidebarToggle && sidebarLayout) {
+                sidebarToggle.addEventListener('click', function() {
+                    sidebarLayout.classList.toggle('active');
+                });
+            }
+
+            // Close sidebar when clicking outside on mobile
+            document.addEventListener('click', function(event) {
+                const isClickInsideSidebar = sidebarLayout.contains(event.target);
+                const isClickOnToggle = sidebarToggle.contains(event.target);
+                
+                if (!isClickInsideSidebar && !isClickOnToggle && window.innerWidth <= 1200) {
+                    sidebarLayout.classList.remove('active');
+                }
+            });
+
+            // Update date display
+            const dateDisplay = document.getElementById('currentDateDisplay');
+            if (dateDisplay) {
+                const now = new Date();
+                const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+                dateDisplay.textContent = now.toLocaleDateString('en-US', options);
+            }
+        });
+    </script>
+</body>
+</html>

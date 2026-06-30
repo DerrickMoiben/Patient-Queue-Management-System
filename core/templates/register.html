@@ -1,0 +1,630 @@
+{% load static %}
+
+{% block extra_css %}
+<!-- ====== FONTS & ICONS ====== -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+    /* ====== CSS VARIABLES ====== */
+    :root {
+        --primary: #2563eb;
+        --primary-dark: #1d4ed8;
+        --primary-light: #60a5fa;
+        --accent: #0f172a;
+        --bg-light: #f8fafc;
+        --white: #ffffff;
+        --gray-50: #f1f5f9;
+        --gray-100: #e2e8f0;
+        --gray-300: #cbd5e1;
+        --gray-500: #64748b;
+        --gray-800: #1e293b;
+        --gray-900: #0f172a;
+        --danger: #ef4444;
+        --success: #10b981;
+        --warning: #f59e0b;
+        
+        --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
+        --shadow-md: 0 10px 25px -5px rgba(37, 99, 235, 0.08), 0 8px 10px -6px rgba(37, 99, 235, 0.08);
+        --shadow-lg: 0 20px 25px -5px rgba(15, 23, 42, 0.05), 0 8px 10px -6px rgba(15, 23, 42, 0.05);
+        
+        --radius-sm: 12px;
+        --radius-md: 16px;
+        --radius-lg: 24px;
+        --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* ====== GLOBAL RESET ====== */
+    * {
+        box-sizing: border-box;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+
+    html, body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        background: var(--bg-light);
+        color: var(--gray-800);
+        overflow-x: hidden;
+    }
+
+    /* ====== SPLIT LAYOUT ====== */
+    .split-wrapper {
+        display: grid;
+        grid-template-columns: 1.1fr 0.9fr;
+        min-height: 100vh;
+        width: 100%;
+    }
+
+    /* ---- LEFT PANEL ---- */
+    .split-left {
+        background: radial-gradient(circle at 80% 20%, #1e3a8a 0%, #0f172a 100%);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        padding: 4rem;
+        color: white;
+        position: relative;
+        overflow: hidden;
+    }
+
+    /* Subtle grid overlay for texture */
+    .split-left::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background-image: linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+        background-size: 32px 32px;
+        pointer-events: none;
+    }
+
+    .split-left-content {
+        position: relative;
+        z-index: 1;
+        max-width: 540px;
+        margin: auto 0;
+    }
+
+    .brand-section {
+        margin-bottom: 3.5rem;
+    }
+
+    .brand-icon {
+        font-size: 2.5rem;
+        color: var(--primary-light);
+        background: rgba(59, 130, 246, 0.1);
+        border: 1px solid rgba(59, 130, 246, 0.2);
+        padding: 1rem;
+        border-radius: var(--radius-sm);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 0 30px rgba(37, 99, 235, 0.15);
+    }
+
+    .split-left h1 {
+        font-weight: 800;
+        font-size: 3.2rem;
+        letter-spacing: -0.03em;
+        line-height: 1.15;
+        margin: 0 0 1rem 0;
+        color: var(--white);
+    }
+
+    .split-left .subhead {
+        font-size: 1.2rem;
+        font-weight: 400;
+        color: var(--gray-300);
+        margin: 0;
+    }
+
+    /* Features UI grid */
+    .feature-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1.25rem;
+    }
+
+    .feature-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem 1.25rem;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: var(--radius-sm);
+        transition: var(--transition);
+    }
+
+    .feature-item i {
+        font-size: 1.1rem;
+        color: var(--primary-light);
+        background: rgba(59, 130, 246, 0.12);
+        width: 2.2rem;
+        height: 2.2rem;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    .feature-item span {
+        font-weight: 500;
+        font-size: 1rem;
+        color: var(--gray-100);
+    }
+
+    .feature-item:hover {
+        background: rgba(255, 255, 255, 0.06);
+        border-color: rgba(96, 165, 250, 0.3);
+        transform: translateX(6px);
+    }
+
+    .left-footer {
+        position: relative;
+        z-index: 1;
+        font-size: 0.85rem;
+        color: var(--gray-500);
+        display: flex;
+        gap: 2rem;
+    }
+
+    /* ---- RIGHT PANEL ---- */
+    .split-right {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 3rem;
+        background: var(--bg-light);
+    }
+
+    .auth-card {
+        width: 100%;
+        max-width: 480px;
+        background: var(--white);
+        border-radius: var(--radius-md);
+        padding: 3rem;
+        box-shadow: var(--shadow-lg);
+        border: 1px solid var(--gray-100);
+    }
+
+    .card-header-custom {
+        margin-bottom: 2.5rem;
+    }
+
+    .card-header-custom h3 {
+        font-weight: 800;
+        font-size: 2rem;
+        letter-spacing: -0.02em;
+        color: var(--gray-900);
+        margin: 0 0 0.5rem 0;
+    }
+
+    .card-header-custom p {
+        color: var(--gray-500);
+        font-weight: 500;
+        font-size: 1rem;
+        margin: 0;
+    }
+
+    /* ====== FORM ELEMENTS ====== */
+    .form-group-custom {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-group-custom label {
+        font-weight: 600;
+        font-size: 0.85rem;
+        color: var(--gray-900);
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+
+    .input-wrapper {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+
+    .form-group-custom input,
+    .form-group-custom select,
+    .form-group-custom textarea {
+        width: 100%;
+        padding: 0.9rem 1rem 0.9rem 2.8rem;
+        border: 1.5px solid var(--gray-100);
+        border-radius: var(--radius-sm);
+        font-size: 0.95rem;
+        background: var(--white);
+        transition: var(--transition);
+        color: var(--gray-900);
+        font-family: inherit;
+        font-weight: 500;
+    }
+
+    .form-group-custom input::placeholder {
+        color: var(--gray-300);
+    }
+
+    .form-group-custom input:focus,
+    .form-group-custom select:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+        outline: none;
+    }
+
+    .form-group-custom .input-icon {
+        position: absolute;
+        left: 1rem;
+        color: var(--gray-300);
+        font-size: 1rem;
+        pointer-events: none;
+        transition: var(--transition);
+        z-index: 2;
+    }
+
+    .form-group-custom input:focus ~ .input-icon {
+        color: var(--primary);
+    }
+
+    .form-group-custom .help-text {
+        font-size: 0.8rem;
+        color: var(--gray-500);
+        margin-top: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .form-group-custom .error-text {
+        color: var(--danger);
+        font-size: 0.8rem;
+        margin-top: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-weight: 600;
+    }
+
+    /* Password strength */
+    .password-strength-container {
+        margin-top: 0.75rem;
+        display: none;
+    }
+
+    .password-strength {
+        height: 6px;
+        border-radius: 10px;
+        background: var(--gray-100);
+        overflow: hidden;
+    }
+
+    .password-strength-bar {
+        height: 100%;
+        width: 0%;
+        transition: var(--transition);
+    }
+
+    .password-strength-weak { background: var(--danger); }
+    .password-strength-medium { background: var(--warning); }
+    .password-strength-strong { background: var(--success); }
+
+    #passwordStrengthText {
+        font-size: 0.8rem;
+        color: var(--gray-500);
+        margin-top: 0.4rem;
+        display: block;
+        font-weight: 600;
+    }
+
+    /* Checkbox */
+    .form-check-custom {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        margin: 1.75rem 0;
+    }
+
+    .form-check-custom input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+        accent-color: var(--primary);
+        border-radius: 4px;
+        margin-top: 2px;
+        cursor: pointer;
+    }
+
+    .form-check-custom label {
+        font-size: 0.9rem;
+        color: var(--gray-500);
+        font-weight: 500;
+        line-height: 1.4;
+        cursor: pointer;
+    }
+
+    .form-check-custom a {
+        color: var(--primary);
+        text-decoration: none;
+        font-weight: 600;
+    }
+
+    .form-check-custom a:hover {
+        text-decoration: underline;
+    }
+
+    /* ====== BUTTONS ====== */
+    .btn-create {
+        width: 100%;
+        padding: 1rem;
+        background: var(--accent);
+        border: none;
+        border-radius: var(--radius-sm);
+        color: white;
+        font-weight: 700;
+        font-size: 1rem;
+        transition: var(--transition);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        cursor: pointer;
+        box-shadow: var(--shadow-sm);
+    }
+
+    .btn-create:hover:not(:disabled) {
+        background: var(--primary);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+    }
+
+    .btn-create:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    .login-cta {
+        margin-top: 2rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid var(--gray-100);
+        text-align: center;
+    }
+
+    .login-cta .text {
+        font-size: 0.9rem;
+        color: var(--gray-500);
+        font-weight: 500;
+    }
+
+    .login-cta .btn-outline-signin {
+        color: var(--accent);
+        font-weight: 700;
+        text-decoration: none;
+        margin-left: 0.5rem;
+        transition: var(--transition);
+    }
+
+    .login-cta .btn-outline-signin:hover {
+        color: var(--primary);
+    }
+
+    /* ====== CUSTOM ALERTS ====== */
+    .alert-custom {
+        border-radius: var(--radius-sm);
+        padding: 1rem 1.2rem;
+        margin-bottom: 2rem;
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-weight: 500;
+    }
+
+    .alert-custom-success { background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0; }
+    .alert-custom-error { background: #fef2f2; color: #991b1b; border: 1px solid #fca5a5; }
+
+    /* ====== RESPONSIVE DESIGN ====== */
+    @media (max-width: 1024px) {
+        .split-wrapper { grid-template-columns: 1fr; }
+        .split-left { display: none; }
+        .split-right { min-height: 100vh; padding: 2rem 1.5rem; }
+        .auth-card { padding: 2.2rem 1.8rem; box-shadow: none; border: none; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="split-wrapper">
+
+    <!-- ====== LEFT PANEL ====== -->
+    <div class="split-left">
+        <div class="split-left-content">
+            <div class="brand-section">
+                <div class="brand-icon"><i class="fas fa-heartbeat"></i></div>
+                <h1>Smart Patient<br>Calling System</h1>
+                <p class="subhead">Streamlined Digital Queue Management</p>
+            </div>
+
+            <div class="feature-grid">
+                <div class="feature-item">
+                    <i class="fas fa-ticket-alt"></i> 
+                    <span>Smart Queue Sequencing</span>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-tv"></i> 
+                    <span>Live Display Dashboard Synchronization</span>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-user-md"></i> 
+                    <span>Dynamic Doctor & Room Assignment</span>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-shield-alt"></i> 
+                    <span>Encrypted Institutional Authentication</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="left-footer">
+            <span>v1.0.0</span>
+            <span>&copy; 2026 Smart Patient Calling System</span>
+        </div>
+    </div>
+
+    <!-- ====== RIGHT PANEL ====== -->
+    <div class="split-right">
+        <div class="auth-card">
+
+            <div class="card-header-custom">
+                <h3>Get Started</h3>
+                <p>Create your institutional control account</p>
+            </div>
+
+            <!-- Messages Dynamic Handler -->
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert-custom alert-custom-{{ message.tags }}">
+                        <i class="fas {% if message.tags == 'success' %}fa-check-circle{% else %}fa-exclamation-circle{% endif %}"></i>
+                        <span>{{ message }}</span>
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            {% if form.errors %}
+                <div class="alert-custom alert-custom-error">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <span>Please correct the marked layout errors.</span>
+                </div>
+            {% endif %}
+
+            <!-- ====== REGISTRATION FORM ====== -->
+            <form method="POST" novalidate id="registrationForm">
+                {% csrf_token %}
+
+                {% for field in form %}
+                    <div class="form-group-custom">
+                        <label for="{{ field.id_for_label }}">
+                            {{ field.label }}
+                        </label>
+
+                        <div class="input-wrapper">
+                            {{ field }}
+                            
+                            <span class="input-icon">
+                                <i class="fas fa-{% if 'username' in field.name %}user{% elif 'email' in field.name %}envelope{% elif 'password' in field.name %}lock{% elif 'first' in field.name %}user-tag{% elif 'last' in field.name %}user-tag{% else %}arrow-right{% endif %}"></i>
+                            </span>
+                        </div>
+
+                        {% if field.help_text %}
+                            <div class="help-text"><i class="fas fa-info-circle"></i> {{ field.help_text|safe }}</div>
+                        {% endif %}
+
+                        {% if field.errors %}
+                            <div class="error-text">
+                                {% for error in field.errors %}
+                                    <i class="fas fa-exclamation-circle"></i> {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+
+                        {% if 'password' in field.name %}
+                            <div class="password-strength-container">
+                                <div class="password-strength"><div class="password-strength-bar" id="passwordStrength"></div></div>
+                                <small id="passwordStrengthText">Enter password criteria</small>
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+
+                <!-- Terms -->
+                <div class="form-check-custom">
+                    <input type="checkbox" id="termsCheck" required>
+                    <label for="termsCheck">
+                        I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>
+                    </label>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" class="btn-create" id="submitBtn">
+                    <span>Create Account</span>
+                    <i class="fas fa-arrow-right"></i>
+                </button>
+
+                <!-- Login Redirect -->
+                <div class="login-cta">
+                    <span class="text">Already have an account?</span>
+                    <a href="{% url 'login' %}" class="btn-outline-signin">Sign In</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- ====== SCRIPTS ====== -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('registrationForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const termsCheck = document.getElementById('termsCheck');
+        const buttonText = submitBtn.querySelector('span');
+
+        form.addEventListener('submit', function(e) {
+            if (!termsCheck.checked) {
+                e.preventDefault();
+                termsCheck.focus();
+                return;
+            }
+            submitBtn.disabled = true;
+            buttonText.textContent = 'Setting up profile...';
+        });
+
+        // Password strength system
+        const passwordInputs = document.querySelectorAll('input[type="password"]');
+        passwordInputs.forEach(input => {
+            input.addEventListener('input', function() {
+                const strengthBar = document.getElementById('passwordStrength');
+                if (!strengthBar) return;
+
+                const password = this.value;
+                let strength = 0;
+
+                if (password.length >= 8) strength++;
+                if (password.length >= 12) strength++;
+                if (password.match(/[a-z]/)) strength++;
+                if (password.match(/[A-Z]/)) strength++;
+                if (password.match(/[0-9]/)) strength++;
+                if (password.match(/[$@#&!_\-*]/)) strength++;
+
+                const strengthText = document.getElementById('passwordStrengthText');
+
+                if (password.length === 0) {
+                    strengthBar.style.width = '0%';
+                    return;
+                }
+
+                const strengthPercent = (strength / 6) * 100;
+                strengthBar.style.width = Math.min(strengthPercent, 100) + '%';
+
+                if (strength <= 2) {
+                    strengthBar.className = 'password-strength-bar password-strength-weak';
+                    if (strengthText) strengthText.textContent = 'Weak Password';
+                } else if (strength <= 4) {
+                    strengthBar.className = 'password-strength-bar password-strength-medium';
+                    if (strengthText) strengthText.textContent = 'Medium security profile';
+                } else {
+                    strengthBar.className = 'password-strength-bar password-strength-strong';
+                    if (strengthText) strengthText.textContent = 'Strong high-security profile';
+                }
+            });
+
+            input.addEventListener('focus', function() {
+                const container = this.closest('.form-group-custom').querySelector('.password-strength-container');
+                if (container) container.style.display = 'block';
+            });
+        });
+    });
+</script>
+{% endblock %}
