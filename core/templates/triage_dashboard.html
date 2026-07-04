@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <div class="card shadow">
+
+        <div class="card-header bg-success text-white">
+            <h4>Patients Waiting for Triage</h4>
+        </div>
+
+        <div class="card-body">
+
+            {% if visits %}
+
+            <table class="table table-hover table-striped align-middle">
+
+                <thead class="table-light">
+
+                    <tr>
+                        <th>Queue</th>
+                        <th>Hospital ID</th>
+                        <th>Patient</th>
+                        <th>Arrival Time</th>
+                        <th></th>
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                {% for visit in visits %}
+
+                    <tr>
+
+                        <td>
+                            <span class="badge bg-primary fs-6">
+                                {{ visit.queue_number }}
+                            </span>
+                        </td>
+
+                        <td>
+                            {{ visit.patient.hospital_id }}
+                        </td>
+
+                        <td>
+                            {{ visit.patient.first_name }}
+                            {{ visit.patient.last_name }}
+                        </td>
+
+                        <td>
+                            {{ visit.visit_date|time:"H:i" }}
+                        </td>
+
+                        <td>
+
+                            <a href="{% url 'triage' %}"
+                               class="btn btn-success">
+
+                                Start Triage
+
+                            </a>
+
+                        </td>
+
+                    </tr>
+
+                {% endfor %}
+
+                </tbody>
+
+            </table>
+
+            {% else %}
+
+                <div class="alert alert-info">
+
+                    No patients are currently waiting for triage.
+
+                </div>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

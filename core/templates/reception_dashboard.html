@@ -698,17 +698,17 @@
                             <div class="action-icon"><i class="fas fa-user-plus"></i></div>
                             <div class="action-title">Register Patient</div>
                             <div class="action-desc">Register a brand new patient identity profile.</div>
-                            <button class="btn-action-custom">Register Patient</button>
+                            <a href="{% url 'register_patient' %}" class="btn-action-custom text-decoration-none d-block">Register Patient</a>
                         </div>
                     </div>
                     <div class="col-md-3 col-sm-6">
-                        <div class="card-custom action-card">
-                            <div class="action-icon"><i class="fas fa-calendar-check"></i></div>
-                            <div class="action-title">Book Queue Session</div>
-                            <div class="action-desc">Assign an existing patient directly to today's active live queue.</div>
-                            <button class="btn-action-custom">Book Session</button>
-                        </div>
-                    </div>
+    <div class="card-custom action-card">
+        <div class="action-icon"><i class="fas fa-calendar-check"></i></div>
+        <div class="action-title">Start a visit</div>
+        <div class="action-desc">Assign an existing patient directly to today's active live</div>
+        <a href="{% url 'start_visit' %}" class="btn-action-custom text-decoration-none d-block">Start Visit</a>
+    </div>
+</div>
                     <div class="col-md-3 col-sm-6">
                         <div class="card-custom action-card">
                             <div class="action-icon"><i class="fas fa-users"></i></div>

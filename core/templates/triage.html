@@ -1,0 +1,133 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <div class="card shadow">
+
+        <div class="card-header bg-success text-white">
+            <h3>Triage Assessment</h3>
+        </div>
+
+        <div class="card-body">
+
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <!-- Patient Information -->
+
+            <div class="row mb-4">
+
+                <div class="col-md-3">
+                    <strong>Queue Number</strong><br>
+                    <span class="badge bg-primary fs-5">
+                        {{ visit.queue_number }}
+                    </span>
+                </div>
+
+                <div class="col-md-3">
+                    <strong>Hospital ID</strong><br>
+                    {{ visit.patient.hospital_id }}
+                </div>
+
+                <div class="col-md-3">
+                    <strong>Patient Name</strong><br>
+                    {{ visit.patient.first_name }}
+                    {{ visit.patient.last_name }}
+                </div>
+
+                <div class="col-md-3">
+                    <strong>Gender</strong><br>
+                    {{ visit.patient.gender }}
+                </div>
+
+            </div>
+
+            <hr>
+
+            <form method="POST">
+
+                {% csrf_token %}
+
+                <div class="row">
+
+                    <div class="col-md-4 mb-3">
+                        <label>Temperature (°C)</label>
+                        {{ form.temperature }}
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+                        <label>Weight (Kg)</label>
+                        {{ form.weight }}
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+                        <label>Height (cm)</label>
+                        {{ form.height }}
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+                        <label>Blood Pressure</label>
+                        {{ form.blood_pressure }}
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+                        <label>Pulse Rate</label>
+                        {{ form.pulse_rate }}
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+                        <label>Oxygen Saturation (%)</label>
+                        {{ form.oxygen_saturation }}
+                    </div>
+
+                    <div class="col-12 mb-3">
+                        <label>Chief Complaint</label>
+                        {{ form.chief_complaint }}
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label>Priority</label>
+                        {{ form.priority }}
+                    </div>
+
+                    <div class="col-12 mb-3">
+                        <label>Notes</label>
+                        {{ form.notes }}
+                    </div>
+
+                </div>
+
+                <div class="d-flex justify-content-end">
+
+                    <a href="{% url 'triage_dashboard' %}"
+                       class="btn btn-secondary me-2">
+
+                        Cancel
+
+                    </a>
+
+                    <button type="submit"
+                            class="btn btn-success">
+
+                        Save & Send to Doctor
+
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
