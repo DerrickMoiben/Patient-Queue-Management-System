@@ -10,6 +10,6 @@ urlpatterns = [
     path("register-patient/", register_patient, name="register_patient"),
     path("start-visit/", start_visit, name="start_visit"),
     path("triage_dashboard/", triage_dashboard, name="triage_dashboard"),
-    path("triage/", triage, name="triage"),
+    path("triage/<int:visit_id>/", triage, name="triage"),
     
 ]

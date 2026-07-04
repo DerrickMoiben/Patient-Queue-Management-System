@@ -620,6 +620,14 @@
             color: var(--primary);
         }
 
+        .empty-container {
+            background: var(--white);
+            padding: 3rem 1.5rem;
+            border-radius: var(--radius-md);
+            border: 1px dashed var(--gray-200);
+            text-align: center;
+        }
+
         @media (max-width: 1200px) {
             .sidebar {
                 transform: translateX(-100%);
@@ -691,7 +699,6 @@
 </head>
 <body>
 
-    <!-- ====== TOP NAVIGATION ====== -->
     <nav class="navbar navbar-expand-lg navbar-custom">
         <div class="d-flex align-items-center w-100 justify-content-between">
             <div class="d-flex align-items-center">
@@ -728,7 +735,6 @@
         </div>
     </nav>
 
-    <!-- ====== SIDEBAR ====== -->
     <aside class="sidebar" id="layoutSidebar">
         <ul class="sidebar-menu">
             <li>
@@ -777,10 +783,8 @@
         </ul>
     </aside>
 
-    <!-- ====== MAIN CONTENT ====== -->
     <main class="main-wrapper">
         
-        <!-- Header -->
         <div class="row align-items-center mb-4">
             <div class="col-md-8">
                 <h1 style="font-weight: 800; color: var(--gray-900); font-size: 1.75rem; letter-spacing: -0.5px; margin-bottom: 0.25rem;">Good Morning, Dr. John</h1>
@@ -797,13 +801,12 @@
             </div>
         </div>
 
-        <!-- Stats -->
         <div class="row g-3 mb-4">
             <div class="col-xl-3 col-sm-6">
                 <div class="card-custom d-flex align-items-center justify-content-between">
                     <div>
                         <span class="stat-label">Waiting Patients</span>
-                        <div class="stat-number">18</div>
+                        <div class="stat-number">{% if doctor_visits %}{{ doctor_visits|length }}{% else %}0{% endif %}</div>
                     </div>
                     <div class="stat-icon-wrapper"><i class="fas fa-user-clock"></i></div>
                 </div>
@@ -840,10 +843,8 @@
 
         <div class="row g-4">
             
-            <!-- Left Column -->
             <div class="col-xl-9 col-lg-8">
                 
-                <!-- Now Serving -->
                 <div class="card-custom card-now-serving mb-4">
                     <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-3 pb-3 border-bottom" style="border-color: var(--gray-200);">
                         <div>
@@ -878,7 +879,6 @@
                     </div>
                 </div>
 
-                <!-- Quick Actions -->
                 <h3 style="font-size: 0.8rem; font-weight: 800; color: var(--gray-900); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 1rem;">Patient Management Actions</h3>
                 <div class="row g-3 mb-4">
                     <div class="col-xl-4 col-sm-6">
@@ -943,68 +943,53 @@
                     </div>
                 </div>
 
-                <!-- Waiting Queue Table -->
                 <h3 style="font-size: 0.8rem; font-weight: 800; color: var(--gray-900); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 1rem;">Live Waiting Queue</h3>
+                
+                {% if doctor_visits %}
                 <div class="table-responsive-custom">
                     <table class="table table-custom align-middle">
                         <thead>
                             <tr>
-                                <th>Queue</th>
-                                <th>Patient</th>
-                                <th>Department</th>
-                                <th>Arrival</th>
+                                <th>Queue No.</th>
+                                <th>Hospital ID</th>
+                                <th>Patient Name</th>
+                                <th>Arrival Time</th>
                                 <th>Priority</th>
                                 <th>Status</th>
                                 <th class="text-center">Action</th>
                             </tr>
                         </thead>
                         <tbody>
+                            {% for visit in doctor_visits %}
                             <tr>
-                                <td style="font-weight: 800; color: var(--primary);">A206</td>
-                                <td style="font-weight: 700;">Mary Smith</td>
-                                <td style="color: var(--gray-500);">General Clinic</td>
-                                <td>09:45 AM</td>
+                                <td style="font-weight: 800; color: var(--primary);">{{ visit.queue_number }}</td>
+                                <td style="font-weight: 600; color: var(--gray-600);">{{ visit.patient.hospital_id }}</td>
+                                <td style="font-weight: 700;">
+                                    {{ visit.patient.first_name }} {{ visit.patient.last_name }}
+                                </td>
+                                <td>{{ visit.visit_date|date:"H:i" }}</td>
                                 <td><span class="badge-priority priority-normal">Normal</span></td>
                                 <td><span style="color: var(--warning); font-weight: 700; font-size: 0.85rem;"><i class="fas fa-circle-notch fa-spin me-1"></i> Waiting</span></td>
-                                <td class="text-center"><a href="#" class="btn-table-action"><i class="fas fa-eye"></i> View</a></td>
+                                <td class="text-center">
+                                    <a href="#" class="btn-table-action"><i class="fas fa-eye"></i> Action</a>
+                                </td>
                             </tr>
-                            <tr>
-                                <td style="font-weight: 800; color: var(--primary);">A207</td>
-                                <td style="font-weight: 700;">Peter Kim</td>
-                                <td style="color: var(--gray-500);">General Clinic</td>
-                                <td>09:52 AM</td>
-                                <td><span class="badge-priority priority-high">High</span></td>
-                                <td><span style="color: var(--warning); font-weight: 700; font-size: 0.85rem;"><i class="fas fa-circle-notch fa-spin me-1"></i> Waiting</span></td>
-                                <td class="text-center"><a href="#" class="btn-table-action"><i class="fas fa-eye"></i> View</a></td>
-                            </tr>
-                            <tr>
-                                <td style="font-weight: 800; color: var(--primary);">A208</td>
-                                <td style="font-weight: 700;">Alice Johnson</td>
-                                <td style="color: var(--gray-500);">General Clinic</td>
-                                <td>10:05 AM</td>
-                                <td><span class="badge-priority priority-low">Low</span></td>
-                                <td><span style="color: var(--warning); font-weight: 700; font-size: 0.85rem;"><i class="fas fa-circle-notch fa-spin me-1"></i> Waiting</span></td>
-                                <td class="text-center"><a href="#" class="btn-table-action"><i class="fas fa-eye"></i> View</a></td>
-                            </tr>
-                            <tr>
-                                <td style="font-weight: 800; color: var(--primary);">A209</td>
-                                <td style="font-weight: 700;">Sarah Williams</td>
-                                <td style="color: var(--gray-500);">General Clinic</td>
-                                <td>10:12 AM</td>
-                                <td><span class="badge-priority priority-normal">Normal</span></td>
-                                <td><span style="color: var(--warning); font-weight: 700; font-size: 0.85rem;"><i class="fas fa-circle-notch fa-spin me-1"></i> Waiting</span></td>
-                                <td class="text-center"><a href="#" class="btn-table-action"><i class="fas fa-eye"></i> View</a></td>
-                            </tr>
+                            {% endfor %}
                         </tbody>
                     </table>
                 </div>
+                {% else %}
+                <div class="empty-container">
+                    <i class="fas fa-user-slash fa-2x mb-3" style="color: var(--gray-400);"></i>
+                    <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--gray-800); margin-bottom: 0.25rem;">No patients waiting</h3>
+                    <p style="font-size: 0.85rem; color: var(--gray-500); margin: 0;">The current queue for your department is completely clear.</p>
+                </div>
+                {% endif %}
 
             </div>
 
-            <!-- Right Column -->
             <div class="col-xl-3 col-lg-4">
                 
-                <!-- Referral Control -->
                 <div class="card-custom mb-4">
                     <h3 style="font-size: 0.8rem; font-weight: 800; color: var(--gray-900); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 1rem;">
                         <i class="fas fa-paper-plane me-2" style="color: var(--primary);"></i>Quick Referral
@@ -1023,7 +1008,6 @@
                     <button class="btn-submit-custom"><i class="fas fa-send me-2"></i>Send Referral</button>
                 </div>
 
-                <!-- Summary Panel -->
                 <div class="card-custom">
                     
                     <div class="summary-block">
@@ -1092,17 +1076,17 @@
 
             // Close sidebar on outside click (mobile)
             document.addEventListener('click', function(event) {
-                const isClickInsideSidebar = sidebar.contains(event.target);
-                const isClickOnToggle = sidebarToggle.contains(event.target);
+                const isClickInsideSidebar = sidebar ? sidebar.contains(event.target) : false;
+                const isClickOnToggle = sidebarToggle ? sidebarToggle.contains(event.target) : false;
                 
-                if (!isClickInsideSidebar && !isClickOnToggle && window.innerWidth <= 1200) {
+                if (!isClickInsideSidebar && !isClickOnToggle && window.innerWidth <= 1200 && sidebar) {
                     sidebar.classList.remove('active');
                 }
             });
 
             // Auto-close sidebar on resize to desktop
             window.addEventListener('resize', function() {
-                if (window.innerWidth > 1200) {
+                if (window.innerWidth > 1200 && sidebar) {
                     sidebar.classList.remove('active');
                 }
             });
@@ -1125,7 +1109,6 @@
             // Table row view button clicks (demo)
             document.querySelectorAll('.btn-table-action').forEach(btn => {
                 btn.addEventListener('click', function(e) {
-                    e.preventDefault();
                     const row = this.closest('tr');
                     if (row) {
                         row.style.backgroundColor = 'var(--primary-light)';

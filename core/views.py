@@ -1,9 +1,8 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login
 from django.contrib import messages
 from .forms import UserRegistrationForm, PatientRegistrationForm, VisitForm, TriageForm
 from .models import Patient, Visit
-
 
 
 # Create your views here.
@@ -73,7 +72,8 @@ def reception_dashboard(request):
 
 @login_required
 def doctor_dashboard(request):
-    return render(request, "doctor_dashboard.html")
+    doctor_visits = Visit.objects.filter(current_department="doctor", status="waiting")
+    return render(request, "doctor_dashboard.html", {"doctor_visits": doctor_visits})
 
 
 def register_patient(request):
@@ -150,16 +150,21 @@ def triage_dashboard(request):
     triage_waiting_visits = Visit.objects.filter(status="waiting", current_department="triage")
     return render(request, "triage_dashboard.html", {"visits": triage_waiting_visits})
 
-def triage(request):
+def triage(request, visit_id):
+    visit = get_object_or_404(Visit, id=visit_id)
     if request.method == "POST":
         form = TriageForm(request.POST)
         if form.is_valid():
             triage = form.save(commit=False)
-            triage.created_by = request.user
+            triage.visit = visit
             triage.save()
+            visit.current_department = "doctor"
+            visit.status = "waiting"
+            visit.save()
             messages.success(request, "Triage information saved successfully.")
-            return redirect("triage")  # Redirect to a success page or another view
+            return redirect("triage_dashboard")  # Redirect to a success page or another view
     else:
         form = TriageForm()
         messages.error(request, "Please correct the errors below.")
-    return render(request, "triage.html", {"form": form})
+    return render(request, "triage.html", {"form": form, "visit": visit})
+
