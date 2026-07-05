@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctor Consultation</title>
+
+    <style>
+
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+            font-family:Arial, Helvetica, sans-serif;
+        }
+
+        body{
+            background:#f4f7fb;
+            padding:40px;
+        }
+
+        .container{
+            max-width:900px;
+            margin:auto;
+        }
+
+        .card{
+            background:#fff;
+            padding:30px;
+            border-radius:10px;
+            box-shadow:0 4px 12px rgba(0,0,0,.1);
+            margin-bottom:25px;
+        }
+
+        h2{
+            color:#0d6efd;
+            margin-bottom:20px;
+        }
+
+        table{
+            width:100%;
+            border-collapse:collapse;
+        }
+
+        td{
+            padding:12px;
+            border-bottom:1px solid #eee;
+        }
+
+        td:first-child{
+            font-weight:bold;
+            width:220px;
+        }
+
+        form p{
+            margin-bottom:18px;
+        }
+
+        form label{
+            display:block;
+            margin-bottom:6px;
+            font-weight:bold;
+        }
+
+        form input,
+        form textarea,
+        form select{
+            width:100%;
+            padding:10px;
+            border:1px solid #ccc;
+            border-radius:6px;
+            font-size:15px;
+        }
+
+        textarea{
+            min-height:120px;
+            resize:vertical;
+        }
+
+        .btn{
+            background:#198754;
+            color:white;
+            padding:12px 25px;
+            border:none;
+            border-radius:6px;
+            cursor:pointer;
+            font-size:16px;
+        }
+
+        .btn:hover{
+            background:#157347;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="card">
+
+        <h2>Patient Information</h2>
+
+        <table>
+
+            <tr>
+                <td>Queue Number</td>
+                <td>{{ visit.queue_number }}</td>
+            </tr>
+
+            <tr>
+                <td>Hospital ID</td>
+                <td>{{ visit.patient.hospital_id }}</td>
+            </tr>
+
+            <tr>
+                <td>Patient Name</td>
+                <td>{{ visit.patient.first_name }} {{ visit.patient.last_name }}</td>
+            </tr>
+
+            <tr>
+                <td>Gender</td>
+                <td>{{ visit.patient.gender }}</td>
+            </tr>
+
+            <tr>
+                <td>Date of Birth</td>
+                <td>{{ visit.patient.date_of_birth }}</td>
+            </tr>
+
+            <tr>
+                <td>Phone Number</td>
+                <td>{{ visit.patient.phone_number }}</td>
+            </tr>
+
+            <tr>
+                <td>Visit Date</td>
+                <td>{{ visit.visit_date }}</td>
+            </tr>
+
+        </table>
+
+    </div>
+
+    <div class="card">
+
+        <h2>Doctor Consultation</h2>
+
+        <form method="POST">
+
+            {% csrf_token %}
+
+            {{ form.as_p }}
+
+            <button type="submit" class="btn">
+                Save Consultation
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+</body>
+</html>

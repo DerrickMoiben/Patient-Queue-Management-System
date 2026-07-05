@@ -194,3 +194,51 @@ class Triage(models.Model):
     
     def __str__(self):
         return f"{self.visit.queue_number} - Triage"
+    
+class DoctorConsultation(models.Model):
+
+    NEXT_DEPARTMENT_CHOICES = (
+        ("laboratory", "Laboratory"),
+        ("pharmacy", "Pharmacy"),
+        ("completed", "Completed"),
+    )
+
+    visit = models.OneToOneField(
+        Visit,
+        on_delete=models.CASCADE,
+        related_name="doctor_consultation"
+    )
+
+    chief_complaint = models.TextField()
+
+    diagnosis = models.TextField()
+
+    treatment = models.TextField(
+        blank=True
+    )
+
+    prescription = models.TextField(
+        blank=True
+    )
+
+    doctor_notes = models.TextField(
+        blank=True
+    )
+
+    next_department = models.CharField(
+        max_length=20,
+        choices=NEXT_DEPARTMENT_CHOICES
+    )
+
+    consulted_by = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True
+    )
+
+    consultation_date = models.DateTimeField(
+        auto_now_add=True
+    )
+
+    def __str__(self):
+        return f"{self.visit.queue_number} - Doctor Consultation"

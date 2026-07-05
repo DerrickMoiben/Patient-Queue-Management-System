@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
-from .models import User, Patient, Visit, Triage
+from .models import User, Patient, Visit, Triage, DoctorConsultation
 
 
 class UserRegistrationForm(UserCreationForm):
@@ -130,3 +130,13 @@ class TriageForm(forms.ModelForm):
             'weight': TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter weight'}),
             'height': TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter height'}),
         }
+
+class DoctorConsultationForm(forms.ModelForm):
+
+    class Meta:
+        model = DoctorConsultation
+        exclude = (
+            "visit",
+            "consulted_by",
+            "consultation_date",
+        )

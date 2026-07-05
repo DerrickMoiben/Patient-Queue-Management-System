@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login
 from django.contrib import messages
-from .forms import UserRegistrationForm, PatientRegistrationForm, VisitForm, TriageForm
+from .forms import UserRegistrationForm, PatientRegistrationForm, VisitForm, TriageForm, DoctorConsultationForm
 from .models import Patient, Visit
 
 
@@ -168,3 +168,100 @@ def triage(request, visit_id):
         messages.error(request, "Please correct the errors below.")
     return render(request, "triage.html", {"form": form, "visit": visit})
 
+def doctor_consultation(request, visit_id):
+
+    visit = get_object_or_404(
+        Visit,
+        id=visit_id
+    )
+
+    # Patient is now being served
+    if visit.status == "waiting":
+        visit.status = "serving"
+        visit.save(update_fields=["status"])
+
+    if request.method == "POST":
+
+        form = DoctorConsultationForm(request.POST)
+
+        if form.is_valid():
+
+            consultation = form.save(commit=False)
+
+            consultation.visit = visit
+            consultation.consulted_by = request.user
+
+            consultation.save()
+
+            visit.current_department = consultation.next_department
+
+            if consultation.next_department == "completed":
+                visit.status = "completed"
+            else:
+                visit.status = "waiting"
+
+            visit.save()
+
+            messages.success(
+                request,
+                "Consultation completed successfully."
+            )
+
+            return redirect("doctor_dashboard")
+
+    else:
+
+        form = DoctorConsultationForm()
+
+    return render(
+        request,
+        "doctor_consultation.html",
+        {
+            "visit": visit,
+            "form": form,
+        }
+    )
+
+
+def triage_tv(request):
+
+    serving = Visit.objects.filter(
+        current_department="triage",
+        status="serving"
+    ).first()
+
+    waiting = Visit.objects.filter(
+        current_department="triage",
+        status="waiting"
+    ).order_by("visit_date")
+
+    return render(
+        request,
+        "triage_tv.html",
+        {
+            "serving": serving,
+            "waiting": waiting,
+        },
+    )
+    
+    
+def doctor_tv(request):
+
+    serving = Visit.objects.filter(
+        current_department="doctor",
+        status="serving"
+    ).first()
+
+    waiting = Visit.objects.filter(
+        current_department="doctor",
+        status="waiting"
+    ).order_by("visit_date")
+
+    return render(
+        request,
+        "doctor_tv.html",
+        {
+            "serving": serving,
+            "waiting": waiting,
+        },
+    )

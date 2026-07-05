@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Triage Queue Display</title>
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial, Helvetica, sans-serif;
+}
+
+body{
+    background:#0b132b;
+    color:white;
+}
+
+.header{
+    background:#1c2541;
+    text-align:center;
+    padding:25px;
+    font-size:38px;
+    font-weight:bold;
+}
+
+.container{
+    display:flex;
+    height:calc(100vh - 88px);
+}
+
+.left{
+    width:60%;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    flex-direction:column;
+    border-right:3px solid rgba(255,255,255,.15);
+}
+
+.left h2{
+    font-size:40px;
+    margin-bottom:30px;
+}
+
+.queue{
+    font-size:150px;
+    color:#00e676;
+    font-weight:bold;
+}
+
+.room{
+    font-size:35px;
+    margin-top:20px;
+}
+
+.right{
+    width:40%;
+    padding:40px;
+}
+
+.right h2{
+    text-align:center;
+    margin-bottom:30px;
+    font-size:35px;
+}
+
+.waiting-list{
+
+    list-style:none;
+
+}
+
+.waiting-list li{
+
+    background:#1c2541;
+    margin-bottom:15px;
+    padding:20px;
+    border-radius:10px;
+
+    display:flex;
+    justify-content:space-between;
+
+    font-size:30px;
+}
+
+.empty{
+
+    text-align:center;
+    margin-top:60px;
+    font-size:30px;
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="header">
+TRIAGE QUEUE DISPLAY
+</div>
+
+<div class="container">
+
+<div class="left">
+
+<h2>NOW SERVING</h2>
+
+{% if serving %}
+
+<div class="queue">
+{{ serving.queue_number }}
+</div>
+
+<div class="room">
+Please Proceed to Triage
+</div>
+
+{% else %}
+
+<div class="empty">
+No Patient Being Served
+</div>
+
+{% endif %}
+
+</div>
+
+<div class="right">
+
+<h2>WAITING</h2>
+
+{% if waiting %}
+
+<ul class="waiting-list">
+
+{% for visit in waiting %}
+
+<li>
+
+<span>{{ visit.queue_number }}</span>
+
+<span>{{ visit.patient.first_name }}</span>
+
+</li>
+
+{% endfor %}
+
+</ul>
+
+{% else %}
+
+<div class="empty">
+
+No Waiting Patients
+
+</div>
+
+{% endif %}
+
+</div>
+
+</div>
+
+<script>
+
+setTimeout(function(){
+
+location.reload();
+
+},5000);
+
+</script>
+
+</body>
+</html>
