@@ -3,85 +3,116 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>New Patient Registration | {{ hospital_name|default:"Moi Teaching and Referral Hospital" }}</title>
+    <title>New Patient Registration | {{ hospital_name|default:"MediFlow Hospital" }}</title>
 
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
 
-<div class="app">
+<div class="app-container">
 
-    <!-- Facility bar -->
-    <header class="facility-bar">
-        <div class="facility-bar__inner">
-            <div class="facility-id">
-                <span class="facility-id__mark">MTRH</span>
-                <div class="facility-id__text">
-                    <span class="facility-id__name">{{ hospital_name|default:"Moi Teaching and Referral Hospital" }}</span>
-                    <span class="facility-id__dept">Health Information &amp; Records Department</span>
+    <header class="mediflow-navbar">
+        <div class="navbar-inner">
+            <div class="brand-identity">
+                <div class="brand-badge">
+                    <i class="fa-solid fa-heart-pulse text-gradient"></i>
+                    <span>MediFlow</span>
+                </div>
+                <div class="brand-separator"></div>
+                <div class="facility-meta">
+                    <span class="facility-name">{{ hospital_name|default:"MediFlow Medical Center" }}</span>
+                    <span class="facility-department">Health Information &amp; Records Department</span>
                 </div>
             </div>
-            <div class="facility-bar__meta">
-                <span>{{ request.user.get_full_name|default:"Records Clerk" }}</span>
-                <span class="facility-bar__divider"></span>
-                <span id="clock"></span>
+            
+            <div class="user-meta-zone">
+                <div class="user-profile">
+                    <div class="avatar-fallback">
+                        <i class="fa-solid fa-user-tie"></i>
+                    </div>
+                    <span class="user-name">{{ request.user.get_full_name|default:"Records Clerk" }}</span>
+                </div>
+                <div class="meta-separator"></div>
+                <div id="clock-container" class="clock-badge">
+                    <i class="fa-regular fa-clock"></i>
+                    <span id="clock"></span>
+                </div>
             </div>
         </div>
     </header>
 
-    <main class="page">
-        <div class="page__col">
+    <main class="workspace-wrapper">
+        <div class="workspace-container">
 
-            <!-- Page heading -->
-            <div class="page-head">
-                <div>
+            <div class="section-header-group">
+                <div class="header-titles">
                     <h1>New Patient Registration</h1>
-                    <p>Create an outpatient record. Fields marked <span class="req">*</span> are required before the record can be saved.</p>
+                    <p>Create a secure outpatient profile record. Fields flagged with a red asterisk (<span class="required-indicator">*</span>) are mandatory.</p>
                 </div>
-                <a href="#" class="link-existing">Find an existing patient instead</a>
+                <a href="#" class="action-secondary-link">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <span>Find an existing patient instead</span>
+                </a>
             </div>
 
-            <!-- Step indicator -->
-            <ol class="steps" aria-label="Registration progress">
-                <li class="steps__item is-current">
-                    <span class="steps__num">1</span>
-                    <span class="steps__label">Demographics</span>
+            <ol class="progress-steps-bar" aria-label="Registration progress">
+                <li class="progress-step-node step-completed">
+                    <span class="step-num-bubble"><i class="fa-solid fa-check"></i></span>
+                    <span class="step-text-label">System Initialization</span>
                 </li>
-                
+                <li class="progress-step-node step-active">
+                    <span class="step-num-bubble">1</span>
+                    <span class="step-text-label">Demographics &amp; Identity</span>
+                </li>
+                <li class="progress-step-node">
+                    <span class="step-num-bubble">2</span>
+                    <span class="step-text-label">Clinical Routing</span>
+                </li>
             </ol>
 
-            <!-- System messages -->
             {% if messages %}
                 {% for message in messages %}
-                    <div class="notice notice--{{ message.tags }}" role="alert">
-                        {{ message }}
+                    <div class="mediflow-alert alert-{{ message.tags }}" role="alert">
+                        <div class="alert-icon">
+                            {% if message.tags == 'success' %}<i class="fa-solid fa-circle-check"></i>
+                            {% elif message.tags == 'error' %}<i class="fa-solid fa-circle-exclamation"></i>
+                            {% else %}<i class="fa-solid fa-circle-info"></i>{% endif %}
+                        </div>
+                        <div class="alert-content">{{ message }}</div>
                     </div>
                 {% endfor %}
             {% endif %}
 
             {% if form.non_field_errors %}
-                <div class="notice notice--error" role="alert">
-                    {% for error in form.non_field_errors %}{{ error }}{% endfor %}
+                <div class="mediflow-alert alert-danger" role="alert">
+                    <div class="alert-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                    <div class="alert-content">
+                        {% for error in form.non_field_errors %}{{ error }}{% endfor %}
+                    </div>
                 </div>
             {% endif %}
 
-            <!-- Form -->
-            <form method="post" novalidate id="registrationForm">
+            <form method="post" novalidate id="registrationForm" class="dossier-form-layout">
                 {% csrf_token %}
 
-                <fieldset class="section">
-                    <legend>Identity</legend>
-                    <div class="grid">
+                <fieldset class="form-card-fieldset">
+                    <legend class="fieldset-card-legend">
+                        <i class="fa-solid fa-id-card-clip"></i> Identity Verification
+                    </legend>
+                    <div class="form-fields-grid">
                         {% for field in form %}
                             {% if field.name in "first_name,last_name,other_name,national_id" %}
-                                <div class="field {% if field.name == 'first_name' or field.name == 'last_name' %}field--half{% endif %}">
-                                    <label for="{{ field.id_for_label }}">
-                                        {{ field.label }}{% if field.field.required %}<span class="req">*</span>{% endif %}
+                                <div class="form-field-wrapper {% if field.name == 'first_name' or field.name == 'last_name' %}span-col-1{% else %}span-col-2{% endif %}">
+                                    <label class="form-field-label" for="{{ field.id_for_label }}">
+                                        {{ field.label }}{% if field.field.required %}<span class="required-indicator">*</span>{% endif %}
                                     </label>
-                                    {{ field }}
-                                    {% if field.help_text %}<p class="hint">{{ field.help_text }}</p>{% endif %}
+                                    <div class="input-control-container">
+                                        {{ field }}
+                                    </div>
+                                    {% if field.help_text %}<p class="form-field-hint"><i class="fa-solid fa-circle-info"></i> {{ field.help_text }}</p>{% endif %}
                                     {% if field.errors %}
-                                        <p class="error">{% for error in field.errors %}{{ error }}{% endfor %}</p>
+                                        <p class="form-field-error-msg"><i class="fa-solid fa-circle-exclamation"></i> {% for error in field.errors %}{{ error }}{% endfor %}</p>
                                     {% endif %}
                                 </div>
                             {% endif %}
@@ -89,19 +120,23 @@
                     </div>
                 </fieldset>
 
-                <fieldset class="section">
-                    <legend>Personal details</legend>
-                    <div class="grid">
+                <fieldset class="form-card-fieldset">
+                    <legend class="fieldset-card-legend">
+                        <i class="fa-solid fa-sliders"></i> Personal Details
+                    </legend>
+                    <div class="form-fields-grid">
                         {% for field in form %}
                             {% if field.name in "date_of_birth,gender,marital_status,occupation" %}
-                                <div class="field field--half">
-                                    <label for="{{ field.id_for_label }}">
-                                        {{ field.label }}{% if field.field.required %}<span class="req">*</span>{% endif %}
+                                <div class="form-field-wrapper span-col-1">
+                                    <label class="form-field-label" for="{{ field.id_for_label }}">
+                                        {{ field.label }}{% if field.field.required %}<span class="required-indicator">*</span>{% endif %}
                                     </label>
-                                    {{ field }}
-                                    {% if field.help_text %}<p class="hint">{{ field.help_text }}</p>{% endif %}
+                                    <div class="input-control-container">
+                                        {{ field }}
+                                    </div>
+                                    {% if field.help_text %}<p class="form-field-hint"><i class="fa-solid fa-circle-info"></i> {{ field.help_text }}</p>{% endif %}
                                     {% if field.errors %}
-                                        <p class="error">{% for error in field.errors %}{{ error }}{% endfor %}</p>
+                                        <p class="form-field-error-msg"><i class="fa-solid fa-circle-exclamation"></i> {% for error in field.errors %}{{ error }}{% endfor %}</p>
                                     {% endif %}
                                 </div>
                             {% endif %}
@@ -109,19 +144,23 @@
                     </div>
                 </fieldset>
 
-                <fieldset class="section">
-                    <legend>Contact information</legend>
-                    <div class="grid">
+                <fieldset class="form-card-fieldset">
+                    <legend class="fieldset-card-legend">
+                        <i class="fa-solid fa-address-book"></i> Contact Information
+                    </legend>
+                    <div class="form-fields-grid">
                         {% for field in form %}
                             {% if field.name in "phone,email,address" %}
-                                <div class="field {% if field.name == 'address' %}field--full{% else %}field--half{% endif %}">
-                                    <label for="{{ field.id_for_label }}">
-                                        {{ field.label }}{% if field.field.required %}<span class="req">*</span>{% endif %}
+                                <div class="form-field-wrapper {% if field.name == 'address' %}span-col-2{% else %}span-col-1{% endif %}">
+                                    <label class="form-field-label" for="{{ field.id_for_label }}">
+                                        {{ field.label }}{% if field.field.required %}<span class="required-indicator">*</span>{% endif %}
                                     </label>
-                                    {{ field }}
-                                    {% if field.help_text %}<p class="hint">{{ field.help_text }}</p>{% endif %}
+                                    <div class="input-control-container">
+                                        {{ field }}
+                                    </div>
+                                    {% if field.help_text %}<p class="form-field-hint"><i class="fa-solid fa-circle-info"></i> {{ field.help_text }}</p>{% endif %}
                                     {% if field.errors %}
-                                        <p class="error">{% for error in field.errors %}{{ error }}{% endfor %}</p>
+                                        <p class="form-field-error-msg"><i class="fa-solid fa-circle-exclamation"></i> {% for error in field.errors %}{{ error }}{% endfor %}</p>
                                     {% endif %}
                                 </div>
                             {% endif %}
@@ -129,20 +168,23 @@
                     </div>
                 </fieldset>
 
-                <!-- Fallback: render any remaining fields not explicitly grouped above -->
-                <fieldset class="section">
-                    <legend>Additional information</legend>
-                    <div class="grid">
+                <fieldset class="form-card-fieldset">
+                    <legend class="fieldset-card-legend">
+                        <i class="fa-solid fa-folder-plus"></i> Additional Information
+                    </legend>
+                    <div class="form-fields-grid">
                         {% for field in form %}
                             {% if field.name not in "first_name,last_name,other_name,national_id,date_of_birth,gender,marital_status,occupation,phone,email,address" %}
-                                <div class="field field--half">
-                                    <label for="{{ field.id_for_label }}">
-                                        {{ field.label }}{% if field.field.required %}<span class="req">*</span>{% endif %}
+                                <div class="form-field-wrapper span-col-1">
+                                    <label class="form-field-label" for="{{ field.id_for_label }}">
+                                        {{ field.label }}{% if field.field.required %}<span class="required-indicator">*</span>{% endif %}
                                     </label>
-                                    {{ field }}
-                                    {% if field.help_text %}<p class="hint">{{ field.help_text }}</p>{% endif %}
+                                    <div class="input-control-container">
+                                        {{ field }}
+                                    </div>
+                                    {% if field.help_text %}<p class="form-field-hint"><i class="fa-solid fa-circle-info"></i> {{ field.help_text }}</p>{% endif %}
                                     {% if field.errors %}
-                                        <p class="error">{% for error in field.errors %}{{ error }}{% endfor %}</p>
+                                        <p class="form-field-error-msg"><i class="fa-solid fa-circle-exclamation"></i> {% for error in field.errors %}{{ error }}{% endfor %}</p>
                                     {% endif %}
                                 </div>
                             {% endif %}
@@ -150,12 +192,21 @@
                     </div>
                 </fieldset>
 
-                <div class="actions">
-                    <p class="actions__note"></p>
-                    <div class="actions__buttons">
-                        <button type="reset" class="btn btn--ghost">Clear</button>
-                        <button type="submit" class="btn btn--primary">
-                            <span class="btn__label">Save and continue</span>
+                <div class="form-action-footer">
+                    <p class="form-system-notice-meta">
+                        <i class="fa-solid fa-shield-halved"></i>
+                        <span>Encrypted electronic data submission node linked with MediFlow core modules.</span>
+                    </p>
+                    <div class="action-buttons-cluster">
+                        <button type="reset" class="btn-mediflow btn-mediflow-secondary">
+                            <i class="fa-solid fa-rotate-left"></i>
+                            <span>Clear</span>
+                        </button>
+                        <button type="submit" class="btn-mediflow btn-mediflow-primary">
+                            <span class="btn-interactive-flex-content">
+                                <span class="btn__label">Save and continue</span>
+                                <i class="fa-solid fa-arrow-right-long"></i>
+                            </span>
                         </button>
                     </div>
                 </div>
@@ -163,488 +214,771 @@
         </div>
     </main>
 
-    <footer class="page-footer">
-        <span>Health Records System &middot; Version 2.0</span>
+    <footer class="mediflow-app-footer">
+        <div class="footer-inner-content">
+            <span class="platform-copyright">MediFlow Platform &bull; Smart Hospital Patient Flow Management System</span>
+            <span class="platform-build-tag">v2.1.0-Release</span>
+        </div>
     </footer>
 </div>
 
 <style>
+    /* Global Token Definitions Matching the MediFlow System Design Requirements */
     :root {
-        /* Professional Blue Theme */
-        --blue-900: #1a365d;
-        --blue-800: #2b4c7e;
-        --blue-700: #2b6cb0;
-        --blue-600: #3182ce;
-        --blue-500: #4299e1;
-        --blue-400: #63b3ed;
-        --blue-300: #90cdf4;
-        --blue-200: #bee3f8;
-        --blue-100: #ebf8ff;
+        --md-primary-gradient: linear-gradient(135deg, #0f4c81 0%, #1d70b8 100%);
+        --md-accent-gradient: linear-gradient(135deg, #1d70b8 0%, #3a9ad9 100%);
+        --md-bg-primary: #0f4c81;
+        --md-bg-hover: #0c3d68;
+        --md-bg-light: #f0f7fc;
+        --md-border-color: #d1e3f3;
         
-        --ink-900: #1a202c;
-        --ink-700: #2d3748;
-        --ink-500: #4a5568;
-        --ink-300: #a0aec0;
-        --line: #e2e8f0;
-        --line-strong: #cbd5e0;
-        --surface: #ffffff;
-        --canvas: #f7fafc;
-        --brand: var(--blue-600);
-        --brand-dark: var(--blue-700);
-        --brand-tint: var(--blue-100);
-        --error: #e53e3e;
-        --error-tint: #fff5f5;
-        --success: #38a169;
-        --success-tint: #f0fff4;
-        --warn: #d69e2e;
-        --warn-tint: #fffff0;
-        --radius: 6px;
-        --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
-        --shadow-md: 0 4px 6px rgba(0,0,0,0.07);
-        --font-ui: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-        --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+        --color-surface: #ffffff;
+        --color-background: #f4f8fb;
+        --color-text-main: #1e293b;
+        --color-text-muted: #64748b;
+        --color-text-light: #94a3b8;
+        
+        --semantic-success: #10b981;
+        --semantic-success-bg: #ecfdf5;
+        --semantic-success-border: #a7f3d0;
+        --semantic-error: #ef4444;
+        --semantic-error-bg: #fef2f2;
+        --semantic-error-border: #fca5a5;
+        --semantic-warn: #f59e0b;
+        --semantic-warn-bg: #fffbeb;
+        --semantic-warn-border: #fde68a;
+
+        --border-radius-standard: 12px;
+        --border-radius-small: 8px;
+        --border-radius-pill: 9999px;
+
+        --shadow-elevation-low: 0 2px 4px rgba(15, 76, 129, 0.04);
+        --shadow-elevation-medium: 0 10px 25px -5px rgba(15, 76, 129, 0.08), 0 8px 10px -6px rgba(15, 76, 129, 0.05);
+        --shadow-focus: 0 0 0 4px rgba(29, 112, 184, 0.18);
+
+        --font-stack-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        --font-stack-mono: 'IBM Plex Mono', monospace;
     }
 
-    * { box-sizing: border-box; }
+    /* Core Resets */
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
 
     body {
-        margin: 0;
-        font-family: var(--font-ui);
-        background: var(--canvas);
-        color: var(--ink-900);
-        font-size: 14px;
-        line-height: 1.6;
+        font-family: var(--font-stack-sans);
+        background-color: var(--color-background);
+        color: var(--color-text-main);
+        min-height: 100vh;
         -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        line-height: 1.5;
     }
 
-    .app { min-height: 100vh; display: flex; flex-direction: column; }
+    .app-container {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+    }
 
-    /* Facility bar - Enhanced blue gradient */
-    .facility-bar {
-        background: linear-gradient(135deg, var(--blue-900) 0%, var(--blue-700) 100%);
-        color: #fff;
-        border-bottom: 3px solid var(--blue-400);
-        box-shadow: var(--shadow-md);
+    /* Top Fixed Premium Navbar Module Layout */
+    .mediflow-navbar {
+        background: rgba(255, 255, 255, 0.85);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border-bottom: 1px solid var(--md-border-color);
         position: sticky;
         top: 0;
-        z-index: 10;
+        z-index: 100;
+        box-shadow: var(--shadow-elevation-low);
     }
-    .facility-bar__inner {
-        max-width: 960px;
+
+    .navbar-inner {
+        max-width: 1200px;
         margin: 0 auto;
-        padding: 12px 24px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        flex-wrap: wrap;
-        gap: 8px;
-    }
-    .facility-id { display: flex; align-items: center; gap: 14px; }
-    .facility-id__mark {
-        font-family: var(--font-mono);
-        font-size: 12px;
-        font-weight: 600;
-        letter-spacing: 0.08em;
-        background: rgba(255,255,255,0.15);
-        border: 1px solid rgba(255,255,255,0.25);
-        border-radius: var(--radius);
-        padding: 4px 10px;
-        color: var(--blue-200);
-    }
-    .facility-id__text { display: flex; flex-direction: column; line-height: 1.3; }
-    .facility-id__name { font-weight: 600; font-size: 14px; color: #fff; }
-    .facility-id__dept { font-size: 11.5px; color: var(--blue-300); }
-    .facility-bar__meta {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        font-size: 12px;
-        color: var(--blue-200);
-        font-family: var(--font-mono);
-        background: rgba(255,255,255,0.08);
-        padding: 6px 14px;
-        border-radius: 20px;
-    }
-    .facility-bar__divider { width: 1px; height: 16px; background: rgba(255,255,255,0.2); }
-    #clock { color: #fff; font-weight: 500; }
-
-    /* Page */
-    .page { flex: 1; padding: 32px 24px 64px; }
-    .page__col { max-width: 780px; margin: 0 auto; }
-
-    .page-head {
+        padding: 14px 24px;
         display: flex;
         justify-content: space-between;
-        align-items: flex-end;
+        align-items: center;
+    }
+
+    .brand-identity {
+        display: flex;
+        align-items: center;
         gap: 16px;
-        margin-bottom: 24px;
-        flex-wrap: wrap;
     }
-    .page-head h1 {
-        margin: 0 0 4px;
-        font-size: 24px;
-        font-weight: 700;
-        color: var(--blue-900);
-        letter-spacing: -0.01em;
-    }
-    .page-head p {
-        margin: 0;
-        font-size: 14px;
-        color: var(--ink-500);
-    }
-    .link-existing {
-        font-size: 13px;
-        color: var(--brand);
-        text-decoration: none;
-        border-bottom: 2px solid transparent;
-        white-space: nowrap;
-        padding-bottom: 2px;
-        font-weight: 500;
-        transition: border-color 0.2s;
-    }
-    .link-existing:hover { border-bottom-color: var(--brand); }
 
-    .req { color: var(--error); margin-left: 2px; font-weight: 700; }
-
-    /* Steps - Blue themed */
-    .steps {
-        list-style: none;
+    .brand-badge {
         display: flex;
-        gap: 0;
-        margin: 0 0 24px;
-        padding: 0;
-        background: var(--surface);
-        border: 1px solid var(--line);
-        border-radius: var(--radius);
-        overflow: hidden;
-        box-shadow: var(--shadow-sm);
+        align-items: center;
+        gap: 8px;
+        font-weight: 700;
+        font-size: 20px;
+        color: #0f4c81;
+        letter-spacing: -0.03em;
     }
-    .steps__item {
-        flex: 1;
+
+    .text-gradient {
+        background: var(--md-primary-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .brand-separator {
+        width: 1px;
+        height: 28px;
+        background-color: var(--md-border-color);
+    }
+
+    .facility-meta {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .facility-name {
+        font-size: 13.5px;
+        font-weight: 600;
+        color: var(--color-text-main);
+    }
+
+    .facility-department {
+        font-size: 11px;
+        color: var(--color-text-muted);
+        font-weight: 500;
+    }
+
+    .user-meta-zone {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+    }
+
+    .user-profile {
         display: flex;
         align-items: center;
         gap: 10px;
-        padding: 12px 18px;
-        border-right: 1px solid var(--line);
-        color: var(--ink-300);
-        font-size: 13px;
-        font-weight: 500;
-        transition: background 0.2s;
+        background-color: var(--md-bg-light);
+        padding: 6px 14px;
+        border-radius: var(--border-radius-pill);
+        border: 1px solid var(--md-border-color);
     }
-    .steps__item:last-child { border-right: none; }
-    .steps__num {
-        width: 24px;
-        height: 24px;
+
+    .avatar-fallback {
+        width: 20px;
+        height: 20px;
+        background: var(--md-primary-gradient);
         border-radius: 50%;
-        border: 2px solid var(--line-strong);
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 12px;
-        font-family: var(--font-mono);
-        font-weight: 600;
-        color: var(--ink-500);
-        flex-shrink: 0;
-        transition: all 0.3s;
-    }
-    .steps__item.is-current { 
-        color: var(--blue-900); 
-        background: var(--blue-100);
-        border-bottom: 3px solid var(--blue-500);
-    }
-    .steps__item.is-current .steps__num {
-        background: var(--blue-500);
-        border-color: var(--blue-500);
         color: #fff;
-        box-shadow: 0 2px 8px rgba(66, 153, 225, 0.3);
+        font-size: 10px;
     }
-    .steps__item:hover:not(.is-current) { background: var(--canvas); }
 
-    /* Notices - Enhanced */
-    .notice {
-        border: 1px solid var(--line);
-        border-left: 4px solid var(--ink-300);
-        background: var(--surface);
-        border-radius: var(--radius);
-        padding: 12px 16px;
-        font-size: 13px;
-        margin-bottom: 16px;
-        color: var(--ink-700);
-        box-shadow: var(--shadow-sm);
+    .user-name {
+        font-size: 12.5px;
+        font-weight: 600;
+        color: #0f4c81;
+    }
+
+    .meta-separator {
+        width: 1px;
+        height: 16px;
+        background-color: var(--md-border-color);
+    }
+
+    .clock-badge {
         display: flex;
         align-items: center;
-        gap: 10px;
-    }
-    .notice::before {
-        font-family: 'Font Awesome 5 Free';
-        font-weight: 900;
-        font-size: 16px;
-    }
-    .notice--success { 
-        border-left-color: var(--success); 
-        background: var(--success-tint); 
-        color: #22543d;
-    }
-    .notice--success::before { content: '✓'; color: var(--success); }
-    .notice--error { 
-        border-left-color: var(--error); 
-        background: var(--error-tint); 
-        color: #9b2c2c;
-    }
-    .notice--error::before { content: '✕'; color: var(--error); }
-    .notice--warning { 
-        border-left-color: var(--warn); 
-        background: var(--warn-tint); 
-        color: #744210;
-    }
-    .notice--warning::before { content: '⚠'; color: var(--warn); }
-
-    /* Sections / fieldsets */
-    .section {
-        border: 1px solid var(--line);
-        border-radius: var(--radius);
-        background: var(--surface);
-        padding: 24px 24px 8px;
-        margin: 0 0 16px;
-        box-shadow: var(--shadow-sm);
-        transition: box-shadow 0.2s;
-    }
-    .section:hover { box-shadow: var(--shadow-md); }
-    .section legend {
-        padding: 0 8px;
-        margin-left: -8px;
+        gap: 8px;
+        font-family: var(--font-stack-mono);
         font-size: 12px;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
-        color: var(--blue-600);
-        background: var(--surface);
-        padding-right: 10px;
+        color: var(--color-text-muted);
+        font-weight: 500;
     }
 
-    .grid {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 16px 24px;
-    }
-    .field { grid-column: span 2; margin-bottom: 12px; }
-    .field--half { grid-column: span 1; }
-    .field--full { grid-column: span 2; }
-    @media (max-width: 640px) {
-        .grid { grid-template-columns: 1fr; gap: 12px; }
-        .field--half { grid-column: span 1; }
+    /* Base Layout Grid & Structure Frame */
+    .workspace-wrapper {
+        flex: 1;
+        padding: 40px 24px 64px;
     }
 
-    .field label {
-        display: block;
-        font-size: 13px;
-        font-weight: 600;
-        color: var(--ink-700);
+    .workspace-container {
+        max-width: 840px;
+        margin: 0 auto;
+    }
+
+    /* Structural Headers */
+    .section-header-group {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 24px;
+        margin-bottom: 32px;
+    }
+
+    .header-titles h1 {
+        font-size: 28px;
+        font-weight: 700;
+        color: #0f4c81;
+        letter-spacing: -0.02em;
         margin-bottom: 6px;
     }
 
-    .field input,
-    .field select,
-    .field textarea {
-        width: 100%;
-        border: 2px solid var(--line);
-        border-radius: var(--radius);
-        padding: 9px 12px;
+    .header-titles p {
         font-size: 14px;
-        font-family: var(--font-ui);
-        color: var(--ink-900);
-        background: #fff;
-        transition: all 0.2s;
-    }
-    .field input:hover,
-    .field select:hover,
-    .field textarea:hover {
-        border-color: var(--blue-300);
-    }
-    .field input:focus,
-    .field select:focus,
-    .field textarea:focus {
-        outline: none;
-        border-color: var(--blue-500);
-        box-shadow: 0 0 0 4px rgba(66, 153, 225, 0.15);
-        background: #fff;
-    }
-    .field input.is-invalid,
-    .field select.is-invalid,
-    .field textarea.is-invalid {
-        border-color: var(--error);
-        box-shadow: 0 0 0 4px rgba(229, 62, 62, 0.1);
+        color: var(--color-text-muted);
     }
 
-    .hint { 
-        margin: 5px 0 0; 
-        font-size: 12px; 
-        color: var(--ink-300); 
-        display: flex;
-        align-items: center;
-        gap: 4px;
+    .required-indicator {
+        color: var(--semantic-error);
+        font-weight: bold;
+        margin: 0 2px;
     }
-    .hint::before { content: 'ⓘ'; font-size: 13px; }
-    .error { 
-        margin: 5px 0 0; 
-        font-size: 12px; 
-        color: var(--error); 
+
+    .action-secondary-link {
+        font-size: 13.5px;
         font-weight: 600;
-        display: flex;
+        color: #1d70b8;
+        text-decoration: none;
+        display: inline-flex;
         align-items: center;
-        gap: 4px;
+        gap: 8px;
+        background-color: #fff;
+        padding: 10px 16px;
+        border-radius: var(--border-radius-small);
+        border: 1px solid var(--md-border-color);
+        box-shadow: var(--shadow-elevation-low);
+        transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        white-space: nowrap;
     }
-    .error::before { content: '⚠'; }
 
-    /* Actions */
-    .actions {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: 16px;
-        padding-top: 20px;
-        margin-top: 8px;
-        flex-wrap: wrap;
-        border-top: 2px solid var(--line);
+    .action-secondary-link:hover {
+        border-color: #1d70b8;
+        color: #0f4c81;
+        transform: translateY(-1px);
+        box-shadow: var(--shadow-elevation-medium);
     }
-    .actions__note { 
-        margin: 0; 
-        font-size: 12px; 
-        color: var(--ink-500); 
-        max-width: 380px;
+
+    /* Step Sequence Visual Track */
+    .progress-steps-bar {
+        list-style: none;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 32px;
+    }
+
+    .progress-step-node {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 16px;
+        background-color: #fff;
+        border: 1px solid var(--md-border-color);
+        border-radius: var(--border-radius-standard);
+        color: var(--color-text-muted);
+        font-size: 13.5px;
+        font-weight: 500;
+        box-shadow: var(--shadow-elevation-low);
+    }
+
+    .step-num-bubble {
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        background-color: var(--color-background);
+        border: 1px solid var(--md-border-color);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: var(--font-stack-mono);
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--color-text-light);
+        flex-shrink: 0;
+    }
+
+    .progress-step-node.step-completed {
+        background-color: #fff;
+        border-color: var(--md-border-color);
+        color: var(--color-text-main);
+    }
+
+    .progress-step-node.step-completed .step-num-bubble {
+        background-color: var(--semantic-success-bg);
+        border-color: var(--semantic-success-border);
+        color: var(--semantic-success);
+    }
+
+    .progress-step-node.step-active {
+        background-color: var(--md-bg-light);
+        border-color: #1d70b8;
+        color: #0f4c81;
+        font-weight: 600;
+        box-shadow: 0 0 0 2px rgba(29, 112, 184, 0.1);
+    }
+
+    .progress-step-node.step-active .step-num-bubble {
+        background: var(--md-primary-gradient);
+        border-color: #0f4c81;
+        color: #fff;
+    }
+
+    /* System Feedback Notifications & Alerts Styling */
+    .mediflow-alert {
+        display: flex;
+        gap: 14px;
+        padding: 16px;
+        border-radius: var(--border-radius-standard);
+        margin-bottom: 24px;
+        border: 1px solid transparent;
+        font-size: 14px;
+    }
+
+    .alert-icon {
+        font-size: 18px;
+        flex-shrink: 0;
+        line-height: 1;
+    }
+
+    .alert-content {
+        flex: 1;
+        font-weight: 500;
+    }
+
+    .alert-success {
+        background-color: var(--semantic-success-bg);
+        border-color: var(--semantic-success-border);
+        color: #065f46;
+    }
+
+    .alert-danger, .alert-error {
+        background-color: var(--semantic-error-bg);
+        border-color: var(--semantic-error-border);
+        color: #991b1b;
+    }
+
+    .alert-warning {
+        background-color: var(--semantic-warn-bg);
+        border-color: var(--semantic-warn-border);
+        color: #92400e;
+    }
+
+    /* Elegant Form Architecture Cards & Controls */
+    .dossier-form-layout {
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+    }
+
+    .form-card-fieldset {
+        border: 1px solid var(--md-border-color);
+        background-color: var(--color-surface);
+        border-radius: var(--border-radius-standard);
+        padding: 32px;
+        box-shadow: var(--shadow-elevation-low);
+        transition: box-shadow 0.25s ease;
+    }
+
+    .form-card-fieldset:hover {
+        box-shadow: var(--shadow-elevation-medium);
+    }
+
+    .fieldset-card-legend {
+        font-size: 13px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: #1d70b8;
+        background-color: var(--md-bg-light);
+        padding: 6px 16px;
+        border-radius: var(--border-radius-pill);
+        border: 1px solid var(--md-border-color);
+        margin-left: -8px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .form-fields-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px 24px;
+        margin-top: 24px;
+    }
+
+    .form-field-wrapper {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .span-col-1 { grid-column: span 1; }
+    .span-col-2 { grid-column: span 2; }
+
+    .form-field-label {
+        font-size: 13.5px;
+        font-weight: 600;
+        color: var(--color-text-main);
+        margin-bottom: 8px;
+    }
+
+    /* Core Direct Standard Field Controls Hook overrides */
+    .input-control-container input,
+    .input-control-container select,
+    .input-control-container textarea {
+        width: 100%;
+        font-family: var(--font-stack-sans);
+        font-size: 14px;
+        color: var(--color-text-main);
+        background-color: #fff;
+        border: 1.5px solid #cbd5e1;
+        border-radius: var(--border-radius-small);
+        padding: 10px 14px;
+        outline: none;
+        transition: all 0.2s ease-in-out;
+    }
+
+    .input-control-container input:hover,
+    .input-control-container select:hover,
+    .input-control-container textarea:hover {
+        border-color: #94a3b8;
+    }
+
+    .input-control-container input:focus,
+    .input-control-container select:focus,
+    .input-control-container textarea:focus {
+        border-color: #1d70b8;
+        box-shadow: var(--shadow-focus);
+        background-color: #fff;
+    }
+
+    /* Global Dynamic Validation Hook States */
+    .input-control-container input.is-invalid,
+    .input-control-container select.is-invalid,
+    .input-control-container textarea.is-invalid {
+        border-color: var(--semantic-error) !important;
+        background-color: var(--semantic-error-bg);
+    }
+
+    .form-field-hint {
+        font-size: 12px;
+        color: var(--color-text-muted);
+        margin-top: 6px;
         display: flex;
         align-items: center;
         gap: 6px;
     }
-    .actions__note::before {  font-size: 14px; }
-    .actions__buttons { display: flex; gap: 12px; margin-left: auto; }
 
-    .btn {
-        border-radius: var(--radius);
-        padding: 10px 24px;
-        font-size: 14px;
+    .form-field-error-msg {
+        font-size: 12.5px;
+        color: var(--semantic-error);
         font-weight: 600;
+        margin-top: 6px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    /* Form Action Control Row Layout */
+    .form-action-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-top: 24px;
+        border-top: 1px solid var(--md-border-color);
+        margin-top: 12px;
+        gap: 24px;
+    }
+
+    .form-system-notice-meta {
+        font-size: 12px;
+        color: var(--color-text-muted);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        max-width: 400px;
+    }
+
+    .form-system-notice-meta i {
+        color: #1d70b8;
+        font-size: 14px;
+    }
+
+    .action-buttons-cluster {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+    }
+
+    /* Interactive MediFlow Base Button Architecture UI Tokens */
+    .btn-mediflow {
+        font-family: var(--font-stack-sans);
+        font-size: 14.5px;
+        font-weight: 600;
+        padding: 11px 24px;
+        border-radius: var(--border-radius-small);
+        border: 1px solid transparent;
         cursor: pointer;
-        border: 2px solid transparent;
-        font-family: var(--font-ui);
-        transition: all 0.2s;
         display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .btn-mediflow-secondary {
+        background-color: #fff;
+        border-color: #cbd5e1;
+        color: var(--color-text-main);
+    }
+
+    .btn-mediflow-secondary:hover {
+        background-color: #f8fafc;
+        border-color: #94a3b8;
+        color: #000;
+    }
+
+    .btn-mediflow-primary {
+        background: var(--md-primary-gradient);
+        color: #fff;
+        box-shadow: 0 4px 12px rgba(15, 76, 129, 0.15);
+    }
+
+    .btn-mediflow-primary:hover {
+        background: linear-gradient(135deg, #0c3d68 0%, #175a94 100%);
+        box-shadow: 0 6px 20px rgba(15, 76, 129, 0.25);
+        transform: translateY(-1px);
+    }
+
+    .btn-mediflow-primary:active {
+        transform: translateY(0);
+    }
+
+    .btn-mediflow:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: none !important;
+        box-shadow: none !important;
+    }
+
+    .btn-interactive-flex-content {
+        display: flex;
         align-items: center;
         gap: 8px;
     }
-    .btn--ghost {
-        background: #fff;
-        border-color: var(--line-strong);
-        color: var(--ink-700);
-    }
-    .btn--ghost:hover { 
-        background: var(--canvas); 
-        border-color: var(--ink-300);
-        transform: translateY(-1px);
-    }
-    .btn--primary {
-        background: linear-gradient(135deg, var(--blue-600) 0%, var(--blue-700) 100%);
-        color: #fff;
-        box-shadow: 0 2px 8px rgba(66, 153, 225, 0.3);
-    }
-    .btn--primary:hover { 
-        background: linear-gradient(135deg, var(--blue-700) 0%, var(--blue-800) 100%);
-        box-shadow: 0 4px 12px rgba(66, 153, 225, 0.4);
-        transform: translateY(-2px);
-    }
-    .btn--primary:active {
-        transform: translateY(0);
-        box-shadow: 0 2px 4px rgba(66, 153, 225, 0.2);
-    }
-    .btn--primary:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
 
-    .page-footer {
-        text-align: center;
-        padding: 20px;
-        font-size: 12px;
-        color: var(--ink-300);
-        border-top: 2px solid var(--line);
-        background: var(--surface);
+    /* Processing Interactive Loading Element Spinner */
+    .spinner-icon-animated {
+        display: inline-block;
+        animation: rotateFrameSpinner 1s linear infinite;
+    }
+
+    @keyframes rotateFrameSpinner {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+
+    /* Universal Enterprise Footer Base Layout */
+    .mediflow-app-footer {
+        background-color: #fff;
+        border-top: 1px solid var(--md-border-color);
+        padding: 20px 24px;
         margin-top: auto;
     }
 
-    @media (max-width: 640px) {
-        .page { padding: 16px 12px 32px; }
-        .facility-bar__inner { padding: 10px 16px; }
-        .facility-id__text { display: none; }
-        .page-head h1 { font-size: 20px; }
-        .actions { flex-direction: column-reverse; align-items: stretch; }
-        .actions__buttons { margin-left: 0; }
-        .btn { flex: 1; text-align: center; justify-content: center; }
-        .steps__item { padding: 8px 12px; font-size: 12px; }
-        .steps__label { display: none; }
-        .section { padding: 16px 16px 4px; }
+    .footer-inner-content {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 12px;
+        color: var(--color-text-muted);
+        font-weight: 500;
     }
 
-    /* Scrollbar styling */
-    ::-webkit-scrollbar { width: 8px; height: 8px; }
-    ::-webkit-scrollbar-track { background: var(--canvas); }
-    ::-webkit-scrollbar-thumb { 
-        background: var(--blue-300); 
-        border-radius: 10px;
+    .platform-build-tag {
+        font-family: var(--font-stack-mono);
+        background-color: var(--color-background);
+        padding: 3px 10px;
+        border-radius: var(--border-radius-pill);
+        border: 1px solid var(--md-border-color);
     }
-    ::-webkit-scrollbar-thumb:hover { background: var(--blue-400); }
+
+    /* Responsive Design Adaptability Layers (Breakpoints) */
+    @media (max-width: 768px) {
+        .workspace-wrapper {
+            padding: 24px 16px 48px;
+        }
+
+        .section-header-group {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 16px;
+        }
+
+        .action-secondary-link {
+            justify-content: center;
+        }
+
+        .progress-steps-bar {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 8px;
+        }
+
+        .form-card-fieldset {
+            padding: 20px;
+        }
+
+        .form-fields-grid {
+            grid-template-columns: 1fr;
+            gap: 16px;
+        }
+
+        .span-col-1, .span-col-2 {
+            grid-column: span 1;
+        }
+
+        .form-action-footer {
+            flex-direction: column-reverse;
+            align-items: stretch;
+        }
+
+        .action-buttons-cluster {
+            flex-direction: column;
+        }
+
+        .btn-mediflow {
+            width: 100%;
+        }
+
+        .footer-inner-content {
+            flex-direction: column;
+            gap: 8px;
+            text-align: center;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .navbar-inner {
+            padding: 12px 16px;
+        }
+        .facility-meta {
+            display: none;
+        }
+        .user-meta-zone {
+            gap: 8px;
+        }
+        .user-name {
+            display: none;
+        }
+    }
+
+    /* Custom Webkit Scrollbars Custom Style Layout Config */
+    ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+        background: var(--color-background);
+    }
+    ::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+        background: #94a3b8;
+    }
 </style>
 
 <script>
-    // Clock in the facility bar — real time
+    // Real-Time High Precision System Digital Clock Configuration Engine
     (function () {
-        const clock = document.getElementById('clock');
-        function tick() {
-            const now = new Date();
-            clock.textContent = now.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
-                + ' \u2022 '
-                + now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+        const clockElement = document.getElementById('clock');
+        function updateClockTime() {
+            if (!clockElement) return;
+            const liveCurrentDateInstance = new Date();
+            
+            const structuredDateString = liveCurrentDateInstance.toLocaleDateString('en-GB', { 
+                day: '2-digit', 
+                month: 'short', 
+                year: 'numeric' 
+            });
+            
+            const structuredTimeString = liveCurrentDateInstance.toLocaleTimeString('en-GB', { 
+                hour: '2-digit', 
+                minute: '2-digit',
+                second: '2-digit'
+            });
+            
+            clockElement.textContent = `${structuredDateString} \u2022 ${structuredTimeString}`;
         }
-        tick();
-        setInterval(tick, 30000);
+        updateClockTime();
+        setInterval(updateClockTime, 1000);
     })();
 
-    // Inline validation
+    // Advanced Validation and Form Automation Controllers
     document.addEventListener('DOMContentLoaded', function () {
-        const form = document.getElementById('registrationForm');
-        const submitBtn = form.querySelector('button[type="submit"]');
-        const btnLabel = submitBtn.querySelector('.btn__label');
+        const formElement = document.getElementById('registrationForm');
+        if (!formElement) return;
 
-        form.addEventListener('submit', function () {
-            submitBtn.disabled = true;
-            btnLabel.textContent = 'Saving...';
-            submitBtn.innerHTML = '<span class="spinner">⟳</span> Saving...';
+        const dynamicSubmitButton = formElement.querySelector('button[type="submit"]');
+
+        // Capture Submission Execution to Trigger State Upgrades and Prevent Double Submission Requests
+        formElement.addEventListener('submit', function () {
+            if (dynamicSubmitButton) {
+                dynamicSubmitButton.disabled = true;
+                dynamicSubmitButton.innerHTML = `
+                    <span class="btn-interactive-flex-content">
+                        <i class="fa-solid fa-circle-notch spinner-icon-animated"></i>
+                        <span>Processing Profile...</span>
+                    </span>
+                `;
+            }
         });
 
-        // Real-time validation
-        form.querySelectorAll('input, select, textarea').forEach(function (el) {
-            el.addEventListener('blur', function () {
-                if (this.hasAttribute('required') && this.value.trim() === '') {
+        // Target and Validate Active Field Inputs on Dynamic Blur Checks
+        const interactionInputs = formElement.querySelectorAll('input, select, textarea');
+        interactionInputs.forEach(function (inputNode) {
+            inputNode.addEventListener('blur', function () {
+                if (this.hasAttribute('required') && !this.value.trim()) {
                     this.classList.add('is-invalid');
                 } else {
                     this.classList.remove('is-invalid');
                 }
             });
-            el.addEventListener('input', function () {
-                if (this.value.trim() !== '') this.classList.remove('is-invalid');
+
+            inputNode.addEventListener('input', function () {
+                if (this.value.trim() !== '') {
+                    this.classList.remove('is-invalid');
+                }
             });
         });
 
-        // Phone number formatting
-        const phone = form.querySelector('input[name="phone"]');
-        if (phone) {
-            phone.addEventListener('input', function () {
-                let v = this.value.replace(/\D/g, '').slice(0, 10);
-                if (v.length > 6) v = v.replace(/(\d{4})(\d{3})(\d{0,3})/, '$1 $2 $3').trim();
-                else if (v.length > 3) v = v.replace(/(\d{4})(\d{0,3})/, '$1 $2').trim();
-                this.value = v;
+        // Specialized Dynamic Institutional Format Rule Masks for Telephone Entry Targets
+        const phoneFieldNode = formElement.querySelector('input[name="phone"]');
+        if (phoneFieldNode) {
+            phoneFieldNode.addEventListener('input', function () {
+                let currentCleanedDigitsValue = this.value.replace(/\D/g, '').slice(0, 10);
+                if (currentCleanedDigitsValue.length > 6) {
+                    currentCleanedDigitsValue = currentCleanedDigitsValue.replace(/(\d{4})(\d{3})(\d{0,3})/, '$1 $2 $3').trim();
+                } else if (currentCleanedDigitsValue.length > 3) {
+                    currentCleanedDigitsValue = currentCleanedDigitsValue.replace(/(\d{4})(\d{0,3})/, '$1 $2').trim();
+                }
+                this.value = currentCleanedDigitsValue;
             });
         }
 
-        // Focus first invalid field
-        const firstInvalid = form.querySelector('.is-invalid');
-        if (firstInvalid) firstInvalid.focus();
+        // Auto Focus First Error Focus Node Layer on Active Validation Failure Signals
+        const focalInvalidNode = formElement.querySelector('.is-invalid');
+        if (focalInvalidNode) {
+            focalInvalidNode.focus();
+        }
     });
 </script>
 </body>

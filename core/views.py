@@ -136,7 +136,7 @@ def start_visit(request):
 
             messages.success(request, "Visit started successfully.")
 
-            return redirect("triage")  # Redirect to the triage page after starting the visit
+            return redirect("triage_dashboard")  # Redirect to the triage page after starting the visit
 
     return render(
         request,

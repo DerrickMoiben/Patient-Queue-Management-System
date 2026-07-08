@@ -1,1 +1,1235 @@
-<h1>we are love</h1>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MediFlow &mdash; Smart Hospital Patient Flow Management System</title>
+<meta name="description" content="Digitize patient flow from Reception to Triage, Doctor, Laboratory, Pharmacy and Completion.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+<style>
+/* ============================================
+    TOKENS
+============================================ */
+:root{
+  --navy-deep:#071F38;
+  --blue:#0056A6;
+  --blue-light:#2E7BC4;
+  --blue-pale:#EAF2FA;
+  --sky-mist:#F3F8FC;
+  --gray-bg:#F5F7FA;
+  --white:#FFFFFF;
+  --ink:#0F2135;
+  --slate:#5B6B7A;
+  --slate-light:#8A97A5;
+  --line:#E2E9F0;
+  --success:#158A5F;
+  --success-bg:#E6F5EF;
+  --amber:#D98C1F;
+  --amber-bg:#FBF1E1;
+  --shadow-sm: 0 1px 3px rgba(7,31,56,0.06), 0 1px 2px rgba(7,31,56,0.04);
+  --shadow-md: 0 8px 24px rgba(7,31,56,0.08), 0 2px 6px rgba(7,31,56,0.04);
+  --shadow-lg: 0 24px 60px rgba(7,31,56,0.14), 0 6px 16px rgba(7,31,56,0.06);
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --font-display: 'Lexend', sans-serif;
+  --font-body: 'Inter', sans-serif;
+  --font-mono: 'IBM Plex Mono', monospace;
+}
+
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  font-family:var(--font-body);
+  color:var(--ink);
+  background:var(--white);
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+img,svg{display:block;max-width:100%;}
+a{text-decoration:none;color:inherit;}
+ul{list-style:none;}
+button{font-family:inherit;cursor:pointer;border:none;background:none;}
+h1,h2,h3,h4{font-family:var(--font-display);color:var(--ink);line-height:1.15;}
+.container{max-width:1240px;margin:0 auto;padding:0 32px;}
+
+:focus-visible{outline:3px solid var(--blue-light);outline-offset:2px;}
+
+@media (prefers-reduced-motion: reduce){
+  *{animation-duration:0.01ms !important;animation-iteration-count:1 !important;transition-duration:0.01ms !important;scroll-behavior:auto !important;}
+}
+
+/* ============================================
+    LOADER
+============================================ */
+#loader{
+  position:fixed;inset:0;z-index:9999;background:var(--navy-deep);
+  display:flex;align-items:center;justify-content:center;flex-direction:column;gap:18px;
+  transition:opacity .6s ease, visibility .6s ease;
+}
+#loader.hidden{opacity:0;visibility:hidden;}
+.loader-mark{
+  width:56px;height:56px;border-radius:50%;
+  border:3px solid rgba(255,255,255,0.15);
+  border-top-color:#4F9FE8;
+  animation:spin 0.9s linear infinite;
+}
+.loader-text{font-family:var(--font-mono);color:#9FC4EA;font-size:13px;letter-spacing:2px;text-transform:uppercase;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* ============================================
+    NAV
+============================================ */
+header{
+  position:fixed;top:0;left:0;right:0;z-index:1000;
+  background:rgba(255,255,255,0.85);
+  backdrop-filter:blur(14px);
+  -webkit-backdrop-filter:blur(14px);
+  border-bottom:1px solid transparent;
+  transition:border-color .3s ease, box-shadow .3s ease;
+}
+header.scrolled{border-bottom-color:var(--line);box-shadow:0 2px 16px rgba(7,31,56,0.05);}
+nav{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:16px 32px;max-width:1240px;margin:0 auto;
+}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--font-display);font-weight:700;font-size:19px;color:var(--navy-deep);}
+.brand .brand-mark{
+  width:36px;height:36px;border-radius:9px;background:linear-gradient(145deg,var(--blue),var(--blue-light));
+  display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px;box-shadow:var(--shadow-sm);
+}
+.brand small{display:block;font-family:var(--font-mono);font-weight:500;font-size:10px;letter-spacing:1.5px;color:var(--slate-light);text-transform:uppercase;margin-top:1px;}
+
+.nav-links{display:flex;align-items:center;gap:34px;}
+.nav-links a{
+  font-size:14.5px;font-weight:500;color:var(--slate);position:relative;padding:4px 0;
+  transition:color .2s ease;
+}
+.nav-links a::after{
+  content:'';position:absolute;left:0;bottom:-2px;width:0;height:2px;background:var(--blue);
+  transition:width .25s ease;
+}
+.nav-links a:hover{color:var(--blue);}
+.nav-links a:hover::after{width:100%;}
+
+.nav-cta{display:flex;align-items:center;gap:14px;}
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  font-family:var(--font-body);font-weight:600;font-size:14.5px;
+  padding:12px 24px;border-radius:10px;transition:all .25s cubic-bezier(.4,0,.2,1);
+  white-space:nowrap;
+}
+.btn-primary{
+  background:var(--blue);color:#fff;box-shadow:0 4px 14px rgba(0,86,166,0.28);
+}
+.btn-primary:hover{background:#004686;transform:translateY(-2px);box-shadow:0 8px 20px rgba(0,86,166,0.35);}
+.btn-outline{
+  background:transparent;color:var(--blue);border:1.5px solid var(--line);
+}
+.btn-outline:hover{border-color:var(--blue);background:var(--blue-pale);}
+.btn-ghost{color:var(--navy-deep);font-weight:600;}
+.btn-ghost:hover{color:var(--blue);}
+.btn-sm{padding:9px 18px;font-size:13.5px;}
+.btn-lg{padding:15px 30px;font-size:15.5px;}
+.btn-white{background:#fff;color:var(--blue);}
+.btn-white:hover{background:var(--blue-pale);transform:translateY(-2px);}
+
+.nav-toggle{display:none;flex-direction:column;gap:5px;padding:8px;}
+.nav-toggle span{width:22px;height:2px;background:var(--navy-deep);border-radius:2px;transition:.3s;}
+
+/* ============================================
+    SECTION UTILITIES
+============================================ */
+section{position:relative;}
+.section-pad{padding:110px 0;}
+.section-tag{
+  display:inline-flex;align-items:center;gap:8px;
+  font-family:var(--font-mono);font-size:12px;font-weight:600;letter-spacing:2px;text-transform:uppercase;
+  color:var(--blue);background:var(--blue-pale);padding:7px 14px;border-radius:100px;margin-bottom:20px;
+}
+.section-tag i{font-size:10px;}
+.section-head{max-width:640px;margin-bottom:56px;}
+.section-head.center{margin-left:auto;margin-right:auto;text-align:center;}
+.section-head h2{font-size:38px;font-weight:700;letter-spacing:-0.5px;margin-bottom:16px;}
+.section-head p{color:var(--slate);font-size:16.5px;}
+.bg-mist{background:var(--gray-bg);}
+
+.reveal{opacity:0;transform:translateY(28px);transition:opacity .7s cubic-bezier(.4,0,.2,1), transform .7s cubic-bezier(.4,0,.2,1);}
+.reveal.in{opacity:1;transform:translateY(0);}
+.reveal-delay-1{transition-delay:.08s;}
+.reveal-delay-2{transition-delay:.16s;}
+.reveal-delay-3{transition-delay:.24s;}
+.reveal-delay-4{transition-delay:.32s;}
+
+/* ============================================
+    HERO
+============================================ */
+.hero{
+  padding:168px 0 100px;
+  background:
+    radial-gradient(1100px 480px at 82% -10%, rgba(0,86,166,0.09), transparent 60%),
+    linear-gradient(180deg,#fff 0%, var(--sky-mist) 100%);
+  overflow:hidden;
+}
+.hero-grid{
+  display:grid;grid-template-columns:1fr 0.92fr;gap:60px;align-items:center;
+}
+.hero-eyebrow{
+  display:inline-flex;align-items:center;gap:9px;
+  background:#fff;border:1px solid var(--line);padding:8px 16px 8px 8px;border-radius:100px;
+  font-size:13px;font-weight:600;color:var(--navy-deep);box-shadow:var(--shadow-sm);margin-bottom:26px;
+}
+.hero-eyebrow .dot-live{
+  width:8px;height:8px;border-radius:50%;background:var(--success);position:relative;flex-shrink:0;
+}
+.hero-eyebrow .dot-live::after{
+  content:'';position:absolute;inset:-4px;border-radius:50%;border:2px solid var(--success);opacity:.5;
+  animation:pulse-ring 1.8s ease-out infinite;
+}
+@keyframes pulse-ring{0%{transform:scale(0.6);opacity:.6;}100%{transform:scale(1.9);opacity:0;}}
+
+.hero h1{
+  font-size:52px;font-weight:700;letter-spacing:-1.2px;margin-bottom:22px;color:var(--navy-deep);
+}
+.hero h1 .accent{color:var(--blue);position:relative;white-space:nowrap;}
+.hero p.lead{font-size:17.5px;color:var(--slate);max-width:520px;margin-bottom:36px;}
+.hero-actions{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:44px;}
+.hero-trust{display:flex;gap:28px;flex-wrap:wrap;}
+.hero-trust div{display:flex;flex-direction:column;}
+.hero-trust strong{font-family:var(--font-mono);font-size:22px;color:var(--navy-deep);font-weight:600;}
+.hero-trust span{font-size:12.5px;color:var(--slate-light);margin-top:2px;}
+
+/* hero visual: patient journey rail mockup */
+.hero-visual{position:relative;}
+.rail-card{
+  background:#fff;border-radius:var(--radius-lg);box-shadow:var(--shadow-lg);
+  border:1px solid var(--line);padding:26px 26px 30px;position:relative;z-index:2;
+}
+.rail-card-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;}
+.rail-card-head h4{font-size:15px;font-weight:600;}
+.rail-card-head .live-badge{
+  display:flex;align-items:center;gap:6px;font-family:var(--font-mono);font-size:11px;font-weight:600;
+  color:var(--success);background:var(--success-bg);padding:5px 10px;border-radius:100px;letter-spacing:0.5px;
+}
+.rail-card-head .live-badge span{width:6px;height:6px;border-radius:50%;background:var(--success);animation:blink 1.6s ease-in-out infinite;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:.3;}}
+
+.journey-rail{position:relative;padding-left:6px;}
+.journey-rail::before{
+  content:'';position:absolute;left:15px;top:8px;bottom:8px;width:2px;
+  background:linear-gradient(180deg,var(--blue) 0%, var(--line) 70%);
+}
+.rail-stage{display:flex;align-items:flex-start;gap:16px;position:relative;padding:11px 0;}
+.rail-stage .node{
+  width:32px;height:32px;border-radius:50%;background:#fff;border:2px solid var(--line);
+  display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--slate-light);
+  flex-shrink:0;position:relative;z-index:1;transition:all .4s ease;
+}
+.rail-stage.done .node{background:var(--blue);border-color:var(--blue);color:#fff;}
+.rail-stage.active .node{background:#fff;border-color:var(--blue);color:var(--blue);box-shadow:0 0 0 5px var(--blue-pale);}
+.rail-stage .rail-info{flex:1;padding-top:4px;}
+.rail-stage .rail-info h5{font-size:14px;font-weight:600;color:var(--ink);margin-bottom:2px;}
+.rail-stage .rail-info span{font-size:12px;color:var(--slate-light);font-family:var(--font-mono);}
+.rail-stage.active .rail-info span{color:var(--blue);font-weight:600;}
+.rail-stage .rail-token{
+  font-family:var(--font-mono);font-size:11px;font-weight:600;color:#fff;background:var(--blue-light);
+  padding:3px 9px;border-radius:100px;flex-shrink:0;margin-top:5px;
+}
+
+.float-chip{
+  position:absolute;background:#fff;border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow-md);
+  padding:12px 16px;display:flex;align-items:center;gap:10px;z-index:3;animation:floaty 4.5s ease-in-out infinite;
+}
+.float-chip i{color:var(--blue);font-size:15px;}
+.float-chip .fc-num{font-family:var(--font-mono);font-weight:700;font-size:16px;color:var(--navy-deep);}
+.float-chip .fc-label{font-size:11px;color:var(--slate-light);}
+.chip-1{top:-22px;right:14px;animation-delay:0s;}
+.chip-2{bottom:-20px;left:-24px;animation-delay:1.2s;}
+@keyframes floaty{0%,100%{transform:translateY(0);}50%{transform:translateY(-9px);}}
+
+.hero-visual .blob{
+  position:absolute;width:420px;height:420px;border-radius:50%;
+  background:radial-gradient(circle,rgba(0,86,166,0.14),transparent 68%);
+  top:-60px;right:-80px;z-index:0;
+}
+
+/* ============================================
+    LOGO STRIP
+============================================ */
+.trust-strip{padding:36px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:#fff;}
+.trust-strip .container{display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;}
+.trust-strip p{font-family:var(--font-mono);font-size:11.5px;letter-spacing:1.5px;text-transform:uppercase;color:var(--slate-light);white-space:nowrap;}
+.trust-strip .strip-items{display:flex;gap:40px;flex-wrap:wrap;opacity:.75;}
+.trust-strip .strip-items span{display:flex;align-items:center;gap:8px;font-weight:600;color:var(--slate);font-size:14px;}
+.trust-strip .strip-items i{color:var(--blue-light);}
+
+/* ============================================
+    FEATURES
+============================================ */
+.feat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:22px;}
+.feat-card{
+  background:#fff;border:1px solid var(--line);border-radius:var(--radius-md);padding:28px 24px;
+  transition:transform .3s cubic-bezier(.4,0,.2,1), box-shadow .3s ease, border-color .3s ease;
+}
+.feat-card:hover{transform:translateY(-6px);box-shadow:var(--shadow-md);border-color:transparent;}
+.feat-icon{
+  width:46px;height:46px;border-radius:12px;background:var(--blue-pale);color:var(--blue);
+  display:flex;align-items:center;justify-content:center;font-size:19px;margin-bottom:18px;
+  transition:background .3s ease, color .3s ease;
+}
+.feat-card:hover .feat-icon{background:var(--blue);color:#fff;}
+.feat-card h3{font-size:16.5px;font-weight:600;margin-bottom:8px;}
+.feat-card p{font-size:14px;color:var(--slate);line-height:1.55;}
+
+/* ============================================
+    WORKFLOW
+============================================ */
+.workflow-rail{display:flex;align-items:flex-start;justify-content:space-between;gap:0;position:relative;margin-top:20px;}
+.wf-step{display:flex;flex-direction:column;align-items:center;text-align:center;flex:1;position:relative;padding:0 6px;}
+.wf-step .wf-icon{
+  width:64px;height:64px;border-radius:18px;background:#fff;border:2px solid var(--line);
+  display:flex;align-items:center;justify-content:center;font-size:24px;color:var(--blue);
+  margin-bottom:16px;position:relative;z-index:2;box-shadow:var(--shadow-sm);transition:all .35s ease;
+}
+.wf-step:hover .wf-icon{border-color:var(--blue);background:var(--blue);color:#fff;transform:scale(1.06);}
+.wf-step .wf-num{font-family:var(--font-mono);font-size:11px;color:var(--slate-light);font-weight:600;margin-bottom:6px;letter-spacing:1px;}
+.wf-step h4{font-size:14.5px;font-weight:600;margin-bottom:6px;}
+.wf-step p{font-size:12.5px;color:var(--slate-light);max-width:120px;}
+.wf-connector{
+  position:absolute;top:32px;left:calc(50% + 40px);right:calc(-50% + 40px);height:2px;
+  background:repeating-linear-gradient(90deg,var(--line) 0 8px, transparent 8px 14px);z-index:1;
+}
+.wf-step:last-child .wf-connector{display:none;}
+.wf-step.optional .wf-icon{border-style:dashed;color:var(--amber);}
+.wf-step.optional .wf-num{color:var(--amber);}
+
+@media(max-width:980px){
+  .workflow-rail{flex-direction:column;align-items:stretch;gap:0;}
+  .wf-step{flex-direction:row;text-align:left;align-items:center;padding:16px 0;gap:18px;}
+  .wf-step .wf-icon{margin-bottom:0;flex-shrink:0;}
+  .wf-connector{position:absolute;left:31px;top:64px;bottom:-16px;width:2px;right:auto;height:auto;background:repeating-linear-gradient(180deg,var(--line) 0 8px, transparent 8px 14px);}
+  .wf-step p{max-width:none;}
+}
+
+/* ============================================
+    DASHBOARD PREVIEW
+============================================ */
+.dash-tabs{display:flex;gap:10px;margin-bottom:36px;flex-wrap:wrap;}
+.dash-tab{
+  padding:10px 20px;border-radius:100px;font-size:14px;font-weight:600;color:var(--slate);
+  background:#fff;border:1px solid var(--line);transition:all .25s ease;
+}
+.dash-tab.active,.dash-tab:hover{background:var(--blue);color:#fff;border-color:var(--blue);}
+.dash-panel{display:none;}
+.dash-panel.active{display:block;animation:fadein .4s ease;}
+@keyframes fadein{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+
+.mock-window{
+  background:#fff;border-radius:var(--radius-lg);border:1px solid var(--line);box-shadow:var(--shadow-lg);overflow:hidden;
+}
+.mock-titlebar{
+  display:flex;align-items:center;gap:8px;padding:14px 20px;background:var(--gray-bg);border-bottom:1px solid var(--line);
+}
+.mock-titlebar span{width:10px;height:10px;border-radius:50%;background:var(--line);}
+.mock-titlebar .mock-path{
+  margin-left:14px;font-family:var(--font-mono);font-size:12px;color:var(--slate-light);
+}
+.mock-body{padding:28px;display:grid;grid-template-columns:220px 1fr;gap:24px;}
+.mock-side{display:flex;flex-direction:column;gap:6px;}
+.mock-side-item{
+  display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:9px;font-size:13.5px;color:var(--slate);font-weight:500;
+}
+.mock-side-item.active{background:var(--blue-pale);color:var(--blue);font-weight:600;}
+.mock-side-item i{width:16px;text-align:center;font-size:13px;}
+.mock-stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:20px;}
+.mock-stat{background:var(--gray-bg);border-radius:12px;padding:16px;}
+.mock-stat .ms-label{font-size:11.5px;color:var(--slate-light);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px;font-family:var(--font-mono);}
+.mock-stat .ms-val{font-family:var(--font-mono);font-size:24px;font-weight:700;color:var(--navy-deep);}
+.mock-stat .ms-val.green{color:var(--success);}
+.mock-stat .ms-val.amber{color:var(--amber);}
+.mock-table{border:1px solid var(--line);border-radius:12px;overflow:hidden;}
+.mock-row{display:grid;grid-template-columns:70px 1fr 120px 100px;gap:12px;padding:12px 16px;align-items:center;font-size:13px;border-bottom:1px solid var(--line);}
+.mock-row:last-child{border-bottom:none;}
+.mock-row.head{background:var(--gray-bg);font-family:var(--font-mono);font-size:11px;text-transform:uppercase;color:var(--slate-light);letter-spacing:.5px;}
+.mock-row .badge{padding:4px 10px;border-radius:100px;font-size:11.5px;font-weight:600;text-align:center;}
+.badge.waiting{background:var(--amber-bg);color:var(--amber);}
+.badge.progress{background:var(--blue-pale);color:var(--blue);}
+.badge.done{background:var(--success-bg);color:var(--success);}
+.mock-token{font-family:var(--font-mono);font-weight:600;color:var(--blue);}
+
+/* Queue Display TV variant */
+.tv-panel{background:var(--navy-deep);color:#fff;}
+.tv-header{display:flex;justify-content:space-between;align-items:center;padding:22px 28px;border-bottom:1px solid rgba(255,255,255,0.1);}
+.tv-header h3{color:#fff;font-size:18px;}
+.tv-header .tv-clock{font-family:var(--font-mono);color:#9FC4EA;font-size:14px;}
+.tv-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:rgba(255,255,255,0.08);}
+.tv-cell{background:var(--navy-deep);padding:26px;text-align:center;}
+.tv-cell .tv-dept{font-family:var(--font-mono);font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:#9FC4EA;margin-bottom:10px;}
+.tv-cell .tv-token{font-family:var(--font-mono);font-size:38px;font-weight:700;color:#fff;margin-bottom:6px;}
+.tv-cell.now-serving{background:rgba(79,159,232,0.14);}
+.tv-cell .tv-sub{font-size:12px;color:#7590A8;}
+
+@media(max-width:768px){
+  .mock-body{grid-template-columns:1fr;}
+  .mock-side{flex-direction:row;overflow-x:auto;}
+  .mock-stats-row{grid-template-columns:1fr 1fr;}
+  .tv-grid{grid-template-columns:1fr;}
+}
+
+/* ============================================
+    BENEFITS
+============================================ */
+.benefit-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;}
+.benefit-card{
+  display:flex;gap:16px;background:#fff;border:1px solid var(--line);border-radius:var(--radius-md);padding:24px;
+  transition:box-shadow .3s ease, transform .3s ease;
+}
+.benefit-card:hover{box-shadow:var(--shadow-md);transform:translateY(-4px);}
+.benefit-check{
+  width:38px;height:38px;border-radius:10px;background:var(--success-bg);color:var(--success);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:15px;
+}
+.benefit-card h4{font-size:15.5px;font-weight:600;margin-bottom:6px;}
+.benefit-card p{font-size:13.5px;color:var(--slate);}
+
+/* ============================================
+    STATS
+============================================ */
+.stats-section{
+  background:linear-gradient(135deg,var(--navy-deep) 0%, #0B3A66 100%);
+  padding:90px 0;color:#fff;position:relative;overflow:hidden;
+}
+.stats-section::before{
+  content:'';position:absolute;width:600px;height:600px;border-radius:50%;
+  background:radial-gradient(circle,rgba(79,159,232,0.16),transparent 70%);
+  top:-200px;left:-150px;
+}
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:32px;position:relative;z-index:1;}
+.stat-item{text-align:center;border-right:1px solid rgba(255,255,255,0.12);}
+.stat-item:last-child{border-right:none;}
+.stat-num{
+  font-family:var(--font-mono);font-size:42px;font-weight:700;color:#fff;margin-bottom:8px;
+  display:flex;align-items:center;justify-content:center;gap:2px;
+}
+.stat-label{font-size:14px;color:#9FC4EA;font-weight:500;}
+
+@media(max-width:860px){
+  .stats-grid{grid-template-columns:1fr 1fr;gap:36px 20px;}
+  .stat-item{border-right:none;}
+}
+
+/* ============================================
+    WHY CHOOSE
+============================================ */
+.why-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;}
+.why-card{text-align:center;padding:30px 20px;border-radius:var(--radius-md);transition:background .3s ease;}
+.why-card:hover{background:var(--sky-mist);}
+.why-icon{
+  width:56px;height:56px;border-radius:50%;background:var(--blue-pale);color:var(--blue);
+  display:flex;align-items:center;justify-content:center;font-size:21px;margin:0 auto 16px;
+}
+.why-card h4{font-size:15.5px;font-weight:600;margin-bottom:6px;}
+.why-card p{font-size:13px;color:var(--slate);}
+
+/* ============================================
+    DEMO CTA
+============================================ */
+.demo-cta{
+  background:linear-gradient(120deg,var(--blue) 0%, #1568B8 55%, var(--blue-light) 100%);
+  border-radius:var(--radius-lg);padding:70px 60px;text-align:center;color:#fff;position:relative;overflow:hidden;
+}
+.demo-cta::after{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(500px 260px at 85% 20%, rgba(255,255,255,0.14), transparent 70%);
+}
+.demo-cta h2{color:#fff;font-size:34px;margin-bottom:14px;position:relative;}
+.demo-cta p{color:rgba(255,255,255,0.85);font-size:16px;max-width:520px;margin:0 auto 34px;position:relative;}
+.demo-actions{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;position:relative;}
+.btn-outline-white{background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,0.5);}
+.btn-outline-white:hover{background:rgba(255,255,255,0.12);border-color:#fff;}
+
+/* ============================================
+    TESTIMONIALS
+============================================ */
+.testi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;}
+.testi-card{
+  background:#fff;border:1px solid var(--line);border-radius:var(--radius-md);padding:30px;
+  display:flex;flex-direction:column;gap:18px;transition:box-shadow .3s ease, transform .3s ease;
+}
+.testi-card:hover{box-shadow:var(--shadow-md);transform:translateY(-4px);}
+.testi-stars{color:var(--amber);font-size:13px;letter-spacing:2px;}
+.testi-quote{font-size:15px;color:var(--ink);line-height:1.65;font-style:italic;}
+.testi-person{display:flex;align-items:center;gap:12px;margin-top:auto;}
+.testi-avatar{
+  width:44px;height:44px;border-radius:50%;background:var(--blue-pale);color:var(--blue);
+  display:flex;align-items:center;justify-content:center;font-weight:700;font-family:var(--font-display);font-size:15px;
+}
+.testi-person strong{display:block;font-size:14px;}
+.testi-person span{font-size:12.5px;color:var(--slate-light);}
+
+/* ============================================
+    FAQ
+============================================ */
+.faq-list{max-width:800px;margin:0 auto;}
+.faq-item{border-bottom:1px solid var(--line);}
+.faq-q{
+  display:flex;align-items:center;justify-content:space-between;padding:24px 4px;font-size:16px;font-weight:600;
+  color:var(--navy-deep);width:100%;text-align:left;gap:20px;
+}
+.faq-q i{color:var(--blue);transition:transform .3s ease;flex-shrink:0;}
+.faq-item.open .faq-q i{transform:rotate(45deg);}
+.faq-a{max-height:0;overflow:hidden;transition:max-height .35s ease, padding .35s ease;}
+.faq-item.open .faq-a{max-height:220px;padding-bottom:22px;}
+.faq-a p{color:var(--slate);font-size:14.5px;max-width:680px;}
+
+/* ============================================
+    CONTACT
+============================================ */
+.contact-grid{display:grid;grid-template-columns:0.85fr 1.15fr;gap:50px;}
+.contact-info-item{display:flex;gap:16px;margin-bottom:28px;}
+.contact-info-item .ci-icon{
+  width:44px;height:44px;border-radius:12px;background:var(--blue-pale);color:var(--blue);
+  display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;
+}
+.contact-info-item h4{font-size:14.5px;font-weight:600;margin-bottom:4px;}
+.contact-info-item p{font-size:14px;color:var(--slate);}
+.contact-form{background:#fff;border:1px solid var(--line);border-radius:var(--radius-lg);padding:36px;box-shadow:var(--shadow-md);}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;}
+.field label{display:block;font-size:13px;font-weight:600;color:var(--navy-deep);margin-bottom:7px;}
+.field input,.field textarea,.field select{
+  width:100%;padding:12px 14px;border:1.5px solid var(--line);border-radius:9px;font-size:14px;font-family:inherit;
+  transition:border-color .2s ease, box-shadow .2s ease;background:#fff;
+}
+.field input:focus,.field textarea:focus,.field select:focus{border-color:var(--blue);box-shadow:0 0 0 4px var(--blue-pale);outline:none;}
+.field{margin-bottom:16px;}
+.field textarea{resize:vertical;min-height:100px;}
+.form-note{font-size:12.5px;color:var(--slate-light);margin-top:14px;text-align:center;}
+.form-success{
+  display:none;text-align:center;padding:40px 20px;
+}
+.form-success i{font-size:44px;color:var(--success);margin-bottom:16px;}
+.form-success h4{font-size:18px;margin-bottom:8px;}
+.form-success p{color:var(--slate);font-size:14px;}
+
+/* ============================================
+    FOOTER
+============================================ */
+footer{background:var(--navy-deep);color:#B9CBDA;padding:70px 0 28px;}
+.footer-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:40px;margin-bottom:50px;}
+.footer-brand .brand{color:#fff;margin-bottom:14px;}
+.footer-brand p{font-size:14px;color:#8AA0B4;max-width:280px;margin-bottom:20px;}
+.footer-social{display:flex;gap:10px;}
+.footer-social a{
+  width:38px;height:38px;border-radius:9px;background:rgba(255,255,255,0.06);display:flex;align-items:center;justify-content:center;
+  color:#B9CBDA;transition:all .25s ease;
+}
+.footer-social a:hover{background:var(--blue);color:#fff;transform:translateY(-3px);}
+.footer-col h5{color:#fff;font-size:14px;font-weight:600;margin-bottom:18px;font-family:var(--font-body);}
+.footer-col a{display:block;font-size:14px;color:#8AA0B4;margin-bottom:12px;transition:color .2s ease;}
+.footer-col a:hover{color:#fff;}
+.footer-bottom{
+  border-top:1px solid rgba(255,255,255,0.08);padding-top:24px;display:flex;justify-content:space-between;
+  align-items:center;flex-wrap:wrap;gap:12px;font-size:13px;color:#7590A8;
+}
+
+/* ============================================
+    FLOATING DEMO BUTTON
+============================================ */
+.float-demo{
+  position:fixed;bottom:28px;right:28px;z-index:900;
+  display:flex;align-items:center;gap:10px;background:var(--blue);color:#fff;
+  padding:15px 22px;border-radius:100px;box-shadow:0 10px 30px rgba(0,86,166,0.4);
+  font-weight:600;font-size:14px;transition:all .3s cubic-bezier(.4,0,.2,1);
+  opacity:0;transform:translateY(20px) scale(.9);pointer-events:none;
+}
+.float-demo.show{opacity:1;transform:translateY(0) scale(1);pointer-events:auto;}
+.float-demo:hover{background:#004686;transform:translateY(-4px) scale(1.03);}
+.float-demo i{font-size:15px;}
+
+/* ============================================
+    BACK TO TOP handled via nav; scroll progress
+============================================ */
+.scroll-progress{position:fixed;top:0;left:0;height:3px;background:var(--blue-light);z-index:1100;width:0%;}
+
+/* ============================================
+    RESPONSIVE
+============================================ */
+@media(max-width:1080px){
+  .feat-grid{grid-template-columns:repeat(2,1fr);}
+  .why-grid{grid-template-columns:repeat(2,1fr);}
+  .benefit-grid{grid-template-columns:repeat(2,1fr);}
+  .testi-grid{grid-template-columns:1fr 1fr;}
+}
+@media(max-width:900px){
+  .hero-grid{grid-template-columns:1fr;}
+  .hero-visual{order:-1;max-width:460px;margin:0 auto 20px;}
+  .hero h1{font-size:42px;}
+  .contact-grid{grid-template-columns:1fr;}
+  .stats-grid{grid-template-columns:1fr 1fr;}
+}
+@media(max-width:768px){
+  .nav-links,.nav-cta .btn-outline{display:none;}
+  .nav-toggle{display:flex;}
+  .section-pad{padding:70px 0;}
+  .section-head h2{font-size:28px;}
+  .feat-grid,.why-grid,.benefit-grid{grid-template-columns:1fr;}
+  .testi-grid{grid-template-columns:1fr;}
+  .demo-cta{padding:50px 26px;}
+  .demo-cta h2{font-size:26px;}
+  .footer-grid{grid-template-columns:1fr 1fr;gap:30px;}
+  .form-row{grid-template-columns:1fr;}
+  .container{padding:0 20px;}
+  .hero{padding-top:140px;}
+  .hero h1{font-size:32px;}
+}
+@media(max-width:520px){
+  .footer-grid{grid-template-columns:1fr;}
+  .mock-body{padding:18px;}
+}
+
+/* mobile nav drawer */
+.mobile-drawer{
+  position:fixed;top:0;right:0;bottom:0;width:78%;max-width:320px;background:#fff;z-index:1050;
+  box-shadow:-10px 0 40px rgba(0,0,0,0.15);transform:translateX(100%);transition:transform .35s cubic-bezier(.4,0,.2,1);
+  padding:100px 30px 30px;display:flex;flex-direction:column;gap:6px;
+}
+.mobile-drawer.open{transform:translateX(0);}
+.mobile-drawer a{padding:14px 4px;font-size:16px;font-weight:600;color:var(--navy-deep);border-bottom:1px solid var(--line);}
+.drawer-overlay{position:fixed;inset:0;background:rgba(7,31,56,0.4);z-index:1040;opacity:0;pointer-events:none;transition:opacity .35s ease;}
+.drawer-overlay.open{opacity:1;pointer-events:auto;}
+</style>
+</head>
+<body>
+
+<div id="loader">
+  <div class="loader-mark"></div>
+  <div class="loader-text">Initializing MediFlow&hellip;</div>
+</div>
+
+<div class="scroll-progress" id="scrollProgress"></div>
+
+<header id="siteHeader">
+  <nav>
+    <a href="#home" class="brand">
+      <span class="brand-mark"><i class="fa-solid fa-heart-pulse"></i></span>
+      <span>MediFlow<small>Hospital Queue Systems</small></span>
+    </a>
+    <div class="nav-links">
+      <a href="#home">Home</a>
+      <a href="#features">Features</a>
+      <a href="#workflow">Workflow</a>
+      <a href="#demo">Demo</a>
+      <a href="#contact">Contact</a>
+    </div>
+    <div class="nav-cta">
+      <a href="{% url 'login' %}" class="btn btn-outline btn-sm">Login</a>
+      <a href="#demo" class="btn btn-primary btn-sm">Request Demo</a>
+      <button class="nav-toggle" id="navToggle" aria-label="Open menu"><span></span><span></span><span></span></button>
+    </div>
+  </nav>
+</header>
+
+<div class="drawer-overlay" id="drawerOverlay"></div>
+<div class="mobile-drawer" id="mobileDrawer">
+  <a href="#home">Home</a>
+  <a href="#features">Features</a>
+  <a href="#workflow">Workflow</a>
+  <a href="#demo">Demo</a>
+  <a href="#contact">Contact</a>
+  <a href="#">Login</a>
+</div>
+
+<section class="hero" id="home">
+  <div class="container">
+    <div class="hero-grid">
+      <div>
+        <div class="hero-eyebrow"><span class="dot-live"></span> Continuous Performance &mdash; Reception to Pharmacy in one flow</div>
+        <h1>Smart Hospital <span class="accent">Patient Flow</span> Management System</h1>
+        <p class="lead">MediFlow digitizes patient movement across your hospital &mdash; from Reception and Registration, through Triage and Doctor Consultation, to Laboratory, Pharmacy and Visit Completion &mdash; all tracked in real time, on one screen.</p>
+        <div class="hero-actions">
+          <a href="#demo" class="btn btn-primary btn-lg"><i class="fa-solid fa-calendar-check"></i> Request a Live Demo</a>
+          <a href="#" class="btn btn-outline btn-lg"><i class="fa-solid fa-right-to-bracket"></i> Login</a>
+        </div>
+        <div class="hero-trust">
+          <div><strong>99.9%</strong><span>System uptime</span></div>
+          <div><strong>7</strong><span>Care stages tracked</span></div>
+          <div><strong>1,000+</strong><span>Patients served daily</span></div>
+        </div>
+      </div>
+
+      <div class="hero-visual">
+        <div class="blob"></div>
+        <div class="rail-card reveal in">
+          <div class="rail-card-head">
+            <h4>Patient Journey &mdash; #A-2247</h4>
+            <div class="live-badge"><span></span>LIVE</div>
+          </div>
+          <div class="journey-rail" id="heroRail">
+            <div class="rail-stage done"><div class="node"><i class="fa-solid fa-check"></i></div><div class="rail-info"><h5>Reception</h5><span>Checked in &mdash; 08:14</span></div></div>
+            <div class="rail-stage done"><div class="node"><i class="fa-solid fa-check"></i></div><div class="rail-info"><h5>Registration</h5><span>Verified &mdash; 08:17</span></div></div>
+            <div class="rail-stage active"><div class="node"><i class="fa-solid fa-stethoscope"></i></div><div class="rail-info"><h5>Triage</h5><span>In progress</span></div><div class="rail-token">03:12</div></div>
+            <div class="rail-stage"><div class="node"><i class="fa-solid fa-user-doctor"></i></div><div class="rail-info"><h5>Doctor Consultation</h5><span>Queued &mdash; Room 4</span></div></div>
+            <div class="rail-stage"><div class="node"><i class="fa-solid fa-flask"></i></div><div class="rail-info"><h5>Laboratory</h5><span>Pending referral</span></div></div>
+            <div class="rail-stage"><div class="node"><i class="fa-solid fa-pills"></i></div><div class="rail-info"><h5>Pharmacy</h5><span>Not started</span></div></div>
+          </div>
+        </div>
+        <div class="float-chip chip-1"><i class="fa-solid fa-users"></i><div><div class="fc-num">184</div><div class="fc-label">In queue now</div></div></div>
+        <div class="float-chip chip-2"><i class="fa-solid fa-gauge-high"></i><div><div class="fc-num">6.4m</div><div class="fc-label">Avg wait time</div></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="trust-strip">
+  <div class="container">
+    <p>Built for public &amp; private healthcare facilities</p>
+    <div class="strip-items">
+      <span><i class="fa-solid fa-hospital"></i> Referral Hospitals</span>
+      <span><i class="fa-solid fa-clinic-medical"></i> Outpatient Clinics</span>
+      <span><i class="fa-solid fa-house-medical"></i> Health Centres</span>
+      <span><i class="fa-solid fa-user-nurse"></i> Nursing Homes</span>
+    </div>
+  </div>
+</div>
+
+<section class="section-pad" id="features">
+  <div class="container">
+    <div class="section-head reveal">
+      <div class="section-tag"><i class="fa-solid fa-layer-group"></i> Platform</div>
+      <h2>Everything a modern hospital workflow needs</h2>
+      <p>One system that connects every department involved in a patient's visit, from the front desk to the pharmacy counter.</p>
+    </div>
+
+    <div class="feat-grid" id="featGrid">
+      <div class="feat-card reveal"><div class="feat-icon"><i class="fa-solid fa-address-card"></i></div><h3>Patient Registration</h3><p>Capture demographics and visit details once, and reuse them across every department automatically.</p></div>
+      <div class="feat-card reveal reveal-delay-1"><div class="feat-icon"><i class="fa-solid fa-list-ol"></i></div><h3>Digital Queue Management</h3><p>Replace paper tickets with auto-generated queue numbers that move patients through each stage in order.</p></div>
+      <div class="feat-card reveal reveal-delay-2"><div class="feat-icon"><i class="fa-solid fa-desktop"></i></div><h3>Reception Dashboard</h3><p>Front-desk staff see arrivals, queue length and department load at a glance, in real time.</p></div>
+      <div class="feat-card reveal reveal-delay-3"><div class="feat-icon"><i class="fa-solid fa-heart-pulse"></i></div><h3>Triage Management</h3><p>Prioritize patients by urgency with vitals capture and configurable triage categories.</p></div>
+      <div class="feat-card reveal"><div class="feat-icon"><i class="fa-solid fa-user-doctor"></i></div><h3>Doctor Consultation</h3><p>Doctors call the next patient, view history and route to lab or pharmacy with one click.</p></div>
+      <div class="feat-card reveal reveal-delay-1"><div class="feat-icon"><i class="fa-solid fa-flask-vial"></i></div><h3>Laboratory Workflow</h3><p>Lab requests, sample tracking and result upload stay linked to the patient's active queue entry.</p></div>
+      <div class="feat-card reveal reveal-delay-2"><div class="feat-icon"><i class="fa-solid fa-prescription-bottle-medical"></i></div><h3>Pharmacy Workflow</h3><p>Dispensing queues sync with prescriptions the moment a doctor completes a consultation.</p></div>
+      <div class="feat-card reveal reveal-delay-3"><div class="feat-icon"><i class="fa-solid fa-tv"></i></div><h3>Live Queue Display TVs</h3><p>Waiting areas show now-serving numbers per department on a clean, easy-to-read public display.</p></div>
+      <div class="feat-card reveal"><div class="feat-icon"><i class="fa-solid fa-user-shield"></i></div><h3>Role-Based Access Control</h3><p>Reception, triage, doctors, lab and pharmacy each see only the tools relevant to their role.</p></div>
+      <div class="feat-card reveal reveal-delay-1"><div class="feat-icon"><i class="fa-solid fa-location-crosshairs"></i></div><h3>Real-Time Patient Tracking</h3><p>Know exactly where every patient is in their visit, from check-in to discharge.</p></div>
+      <div class="feat-card reveal reveal-delay-2"><div class="feat-icon"><i class="fa-solid fa-chart-line"></i></div><h3>Reporting &amp; Analytics</h3><p>Track wait times, department load and daily volumes with exportable reports for management.</p></div>
+      <div class="feat-card reveal reveal-delay-3"><div class="feat-icon"><i class="fa-solid fa-lock"></i></div><h3>Secure Patient Records</h3><p>Encrypted storage and audit trails keep patient data protected and compliant.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="section-pad bg-mist" id="workflow">
+  <div class="container">
+    <div class="section-head center reveal" style="margin-left:auto;margin-right:auto;">
+      <div class="section-tag" style="margin-left:auto;margin-right:auto;display:table;"><i class="fa-solid fa-route"></i> The Journey</div>
+      <h2>How a patient moves through the system</h2>
+      <p>A single flow record follows the patient across departments, so nobody re-registers and nothing gets lost.</p>
+    </div>
+
+    <div class="workflow-rail reveal">
+      <div class="wf-step"><div class="wf-connector"></div><div class="wf-num">01</div><div class="wf-icon"><i class="fa-solid fa-door-open"></i></div><h4>Reception</h4><p>Patient arrives &amp; checks in</p></div>
+      <div class="wf-step"><div class="wf-connector"></div><div class="wf-num">02</div><div class="wf-icon"><i class="fa-solid fa-address-card"></i></div><h4>Registration</h4><p>Demographics captured</p></div>
+      <div class="wf-step"><div class="wf-connector"></div><div class="wf-num">03</div><div class="wf-icon"><i class="fa-solid fa-ticket"></i></div><h4>Queue Created</h4><p>Number issued automatically</p></div>
+      <div class="wf-step"><div class="wf-connector"></div><div class="wf-num">04</div><div class="wf-icon"><i class="fa-solid fa-stethoscope"></i></div><h4>Triage</h4><p>Vitals &amp; urgency assessed</p></div>
+      <div class="wf-step"><div class="wf-connector"></div><div class="wf-num">05</div><div class="wf-icon"><i class="fa-solid fa-user-doctor"></i></div><h4>Doctor Consultation</h4><p>Diagnosis &amp; referral</p></div>
+      <div class="wf-step optional"><div class="wf-connector"></div><div class="wf-num">06</div><div class="wf-icon"><i class="fa-solid fa-flask"></i></div><h4>Laboratory</h4><p>If tests are required</p></div>
+      <div class="wf-step"><div class="wf-connector"></div><div class="wf-num">07</div><div class="wf-icon"><i class="fa-solid fa-pills"></i></div><h4>Pharmacy</h4><p>Medication dispensed</p></div>
+      <div class="wf-step"><div class="wf-num">08</div><div class="wf-icon"><i class="fa-solid fa-circle-check"></i></div><h4>Visit Completed</h4><p>Patient discharged</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="section-pad" id="dashboards">
+  <div class="container">
+    <div class="section-head reveal">
+      <div class="section-tag"><i class="fa-solid fa-display"></i> Live Preview</div>
+      <h2>One system, four views &mdash; built for each role</h2>
+      <p>Every department gets a dashboard tuned to what they need to do next.</p>
+    </div>
+
+    <div class="dash-tabs reveal">
+      <button class="dash-tab active" data-tab="reception">Reception Dashboard</button>
+      <button class="dash-tab" data-tab="doctor">Doctor Dashboard</button>
+      <button class="dash-tab" data-tab="tv">Queue Display TV</button>
+      <button class="dash-tab" data-tab="triage">Triage Dashboard</button>
+    </div>
+
+    <div class="reveal">
+      <div class="dash-panel active" id="panel-reception">
+        <div class="mock-window">
+          <div class="mock-titlebar"><span></span><span></span><span></span><div class="mock-path"><i class="fa-solid fa-lock" style="font-size:10px;"></i>&nbsp; mediflow.hospital.local/reception</div></div>
+          <div class="mock-body">
+            <div class="mock-side">
+              <div class="mock-side-item active"><i class="fa-solid fa-table-columns"></i> Dashboard</div>
+              <div class="mock-side-item"><i class="fa-solid fa-user-plus"></i> New Patient</div>
+              <div class="mock-side-item"><i class="fa-solid fa-list-check"></i> Queue List</div>
+              <div class="mock-side-item"><i class="fa-solid fa-chart-simple"></i> Reports</div>
+              <div class="mock-side-item"><i class="fa-solid fa-gear"></i> Settings</div>
+            </div>
+            <div>
+              <div class="mock-stats-row">
+                <div class="mock-stat"><div class="ms-label">Waiting</div><div class="ms-val">28</div></div>
+                <div class="mock-stat"><div class="ms-label">Checked In Today</div><div class="ms-val green">312</div></div>
+                <div class="mock-stat"><div class="ms-label">Avg Check-in Time</div><div class="ms-val amber">1m 40s</div></div>
+              </div>
+              <div class="mock-table">
+                <div class="mock-row head"><div>Token</div><div>Patient</div><div>Department</div><div>Status</div></div>
+                <div class="mock-row"><div class="mock-token">A-2247</div><div>J. Wanjiru</div><div>Triage</div><div><span class="badge progress">In Queue</span></div></div>
+                <div class="mock-row"><div class="mock-token">A-2248</div><div>P. Otieno</div><div>Reception</div><div><span class="badge waiting">Waiting</span></div></div>
+                <div class="mock-row"><div class="mock-token">A-2249</div><div>M. Chebet</div><div>Registration</div><div><span class="badge done">Complete</span></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="dash-panel" id="panel-doctor">
+        <div class="mock-window">
+          <div class="mock-titlebar"><span></span><span></span><span></span><div class="mock-path"><i class="fa-solid fa-lock" style="font-size:10px;"></i>&nbsp; mediflow.hospital.local/doctor</div></div>
+          <div class="mock-body">
+            <div class="mock-side">
+              <div class="mock-side-item active"><i class="fa-solid fa-table-columns"></i> My Queue</div>
+              <div class="mock-side-item"><i class="fa-solid fa-notes-medical"></i> Consultation</div>
+              <div class="mock-side-item"><i class="fa-solid fa-flask"></i> Lab Referrals</div>
+              <div class="mock-side-item"><i class="fa-solid fa-clock-rotate-left"></i> History</div>
+            </div>
+            <div>
+              <div class="mock-stats-row">
+                <div class="mock-stat"><div class="ms-label">Room</div><div class="ms-val">04</div></div>
+                <div class="mock-stat"><div class="ms-label">Patients Seen</div><div class="ms-val green">19</div></div>
+                <div class="mock-stat"><div class="ms-label">Now Serving</div><div class="ms-val">A-2247</div></div>
+              </div>
+              <div class="mock-table">
+                <div class="mock-row head"><div>Token</div><div>Patient</div><div>Referred By</div><div>Status</div></div>
+                <div class="mock-row"><div class="mock-token">A-2247</div><div>J. Wanjiru</div><div>Triage</div><div><span class="badge progress">In Room</span></div></div>
+                <div class="mock-row"><div class="mock-token">A-2250</div><div>D. Kiplagat</div><div>Triage</div><div><span class="badge waiting">Next</span></div></div>
+                <div class="mock-row"><div class="mock-token">A-2251</div><div>F. Achieng</div><div>Triage</div><div><span class="badge waiting">Waiting</span></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="dash-panel" id="panel-tv">
+        <div class="mock-window tv-panel">
+          <div class="tv-header"><h3><i class="fa-solid fa-tv"></i>&nbsp; Now Serving</h3><div class="tv-clock" id="tvClock">08:42:15</div></div>
+          <div class="tv-grid">
+            <div class="tv-cell now-serving"><div class="tv-dept">Triage</div><div class="tv-token">A-2247</div><div class="tv-sub">Room T-1</div></div>
+            <div class="tv-cell now-serving"><div class="tv-dept">Doctor</div><div class="tv-token">A-2233</div><div class="tv-sub">Room 04</div></div>
+            <div class="tv-cell"><div class="tv-dept">Laboratory</div><div class="tv-token">A-2201</div><div class="tv-sub">Room L-2</div></div>
+            <div class="tv-cell now-serving"><div class="tv-dept">Pharmacy</div><div class="tv-token">A-2190</div><div class="tv-sub">Window 2</div></div>
+            <div class="tv-cell"><div class="tv-dept">Registration</div><div class="tv-token">A-2252</div><div class="tv-sub">Desk 3</div></div>
+            <div class="tv-cell"><div class="tv-dept">Reception</div><div class="tv-token">A-2255</div><div class="tv-sub">Desk 1</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="dash-panel" id="panel-triage">
+        <div class="mock-window">
+          <div class="mock-titlebar"><span></span><span></span><span></span><div class="mock-path"><i class="fa-solid fa-lock" style="font-size:10px;"></i>&nbsp; mediflow.hospital.local/triage</div></div>
+          <div class="mock-body">
+            <div class="mock-side">
+              <div class="mock-side-item active"><i class="fa-solid fa-table-columns"></i> Triage Queue</div>
+              <div class="mock-side-item"><i class="fa-solid fa-heart-pulse"></i> Vitals Entry</div>
+              <div class="mock-side-item"><i class="fa-solid fa-sort"></i> Priority Levels</div>
+            </div>
+            <div>
+              <div class="mock-stats-row">
+                <div class="mock-stat"><div class="ms-label">Urgent</div><div class="ms-val amber">3</div></div>
+                <div class="mock-stat"><div class="ms-label">Standard</div><div class="ms-val">22</div></div>
+                <div class="mock-stat"><div class="ms-label">Completed Today</div><div class="ms-val green">147</div></div>
+              </div>
+              <div class="mock-table">
+                <div class="mock-row head"><div>Token</div><div>Patient</div><div>Priority</div><div>Status</div></div>
+                <div class="mock-row"><div class="mock-token">A-2247</div><div>J. Wanjiru</div><div>Standard</div><div><span class="badge progress">In Progress</span></div></div>
+                <div class="mock-row"><div class="mock-token">A-2244</div><div>S. Kamau</div><div>Urgent</div><div><span class="badge waiting">Priority</span></div></div>
+                <div class="mock-row"><div class="mock-token">A-2249</div><div>M. Chebet</div><div>Standard</div><div><span class="badge done">Referred</span></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section-pad bg-mist" id="benefits">
+  <div class="container">
+    <div class="section-head reveal">
+      <div class="section-tag"><i class="fa-solid fa-award"></i> Outcomes</div>
+      <h2>What changes on the ground</h2>
+      <p>Measurable improvements hospital administrators care about, from day one.</p>
+    </div>
+    <div class="benefit-grid">
+      <div class="benefit-card reveal"><div class="benefit-check"><i class="fa-solid fa-check"></i></div><div><h4>Reduce Waiting Time</h4><p>Automated routing cuts idle time between departments.</p></div></div>
+      <div class="benefit-card reveal reveal-delay-1"><div class="benefit-check"><i class="fa-solid fa-check"></i></div><div><h4>Improve Patient Experience</h4><p>Clear queue numbers and wait estimates reduce anxiety and confusion.</p></div></div>
+      <div class="benefit-card reveal reveal-delay-2"><div class="benefit-check"><i class="fa-solid fa-check"></i></div><div><h4>Real-Time Patient Tracking</h4><p>Staff and patients always know what's next and how long it will take.</p></div></div>
+      <div class="benefit-card reveal"><div class="benefit-check"><i class="fa-solid fa-check"></i></div><div><h4>Organized Hospital Workflow</h4><p>Every department works from the same live patient record.</p></div></div>
+      <div class="benefit-card reveal reveal-delay-1"><div class="benefit-check"><i class="fa-solid fa-check"></i></div><div><h4>Increased Staff Productivity</h4><p>Less manual paperwork means more time spent with patients.</p></div></div>
+      <div class="benefit-card reveal reveal-delay-2"><div class="benefit-check"><i class="fa-solid fa-check"></i></div><div><h4>Better Patient Record Management</h4><p>Centralized, searchable records replace scattered paper files.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="stats-section">
+  <div class="container">
+    <div class="stats-grid">
+      <div class="stat-item reveal"><div class="stat-num"><span class="counter" data-target="99.9" data-decimals="1">0</span>%</div><div class="stat-label">System Availability</div></div>
+      <div class="stat-item reveal reveal-delay-1"><div class="stat-num"><span class="counter" data-target="1000">0</span>+</div><div class="stat-label">Patients Managed Daily</div></div>
+      <div class="stat-item reveal reveal-delay-2"><div class="stat-num"><span class="counter" data-target="7">0</span></div><div class="stat-label">Hospital Departments Connected</div></div>
+      <div class="stat-item reveal reveal-delay-3"><div class="stat-num"><span class="counter" data-target="45">0</span>s</div><div class="stat-label">Average Processing Time</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="section-pad" id="why">
+  <div class="container">
+    <div class="section-head center reveal" style="margin-left:auto;margin-right:auto;">
+      <div class="section-tag" style="margin-left:auto;margin-right:auto;display:table;"><i class="fa-solid fa-star"></i> Why MediFlow</div>
+      <h2>Why hospitals choose our system</h2>
+      <p>Purpose-built for the realities of busy public and private healthcare facilities.</p>
+    </div>
+    <div class="why-grid">
+      <div class="why-card reveal"><div class="why-icon"><i class="fa-solid fa-wand-magic-sparkles"></i></div><h4>Modern Interface</h4><p>Clean, uncluttered screens staff learn in minutes.</p></div>
+      <div class="why-card reveal reveal-delay-1"><div class="why-icon"><i class="fa-solid fa-hand-pointer"></i></div><h4>Easy to Use</h4><p>Minimal training required for reception, triage or pharmacy staff.</p></div>
+      <div class="why-card reveal reveal-delay-2"><div class="why-icon"><i class="fa-solid fa-shield-halved"></i></div><h4>Secure</h4><p>Encrypted data storage with full access audit trails.</p></div>
+      <div class="why-card reveal reveal-delay-3"><div class="why-icon"><i class="fa-solid fa-arrows-up-down-left-right"></i></div><h4>Scalable</h4><p>From a single clinic to a multi-department referral hospital.</p></div>
+      <div class="why-card reveal"><div class="why-icon"><i class="fa-solid fa-bolt"></i></div><h4>Fast</h4><p>Patient actions update instantly across every connected screen.</p></div>
+      <div class="why-card reveal reveal-delay-1"><div class="why-icon"><i class="fa-solid fa-server"></i></div><h4>Reliable</h4><p>Built for uninterrupted use during high patient volumes.</p></div>
+      <div class="why-card reveal reveal-delay-2"><div class="why-icon"><i class="fa-solid fa-user-shield"></i></div><h4>Role-Based Access</h4><p>Every user sees exactly what their role requires, nothing more.</p></div>
+      <div class="why-card reveal reveal-delay-3"><div class="why-icon"><i class="fa-solid fa-headset"></i></div><h4>Expert Support</h4><p>Onboarding and technical support tailored to dynamic hospital operations.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="section-pad bg-mist" id="demo">
+  <div class="container">
+    <div class="demo-cta reveal">
+      <h2>Experience the System</h2>
+      <p>See how MediFlow handles a full patient journey, department by department, in a live walkthrough with our team.</p>
+      <div class="demo-actions">
+        <a href="#contact" class="btn btn-white btn-lg"><i class="fa-solid fa-calendar-check"></i> Request Live Demo</a>
+        <a href="#" class="btn btn-outline-white btn-lg"><i class="fa-solid fa-flask"></i> Try Demo Account</a>
+        <a href="#contact" class="btn btn-outline-white btn-lg"><i class="fa-solid fa-phone"></i> Contact Sales</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section-pad" id="testimonials">
+  <div class="container">
+    <div class="section-head center reveal" style="margin-left:auto;margin-right:auto;">
+      <div class="section-tag" style="margin-left:auto;margin-right:auto;display:table;"><i class="fa-solid fa-quote-left"></i> Feedback</div>
+      <h2>Trusted by hospital staff</h2>
+      <p>What clinicians and administrators say after switching to MediFlow.</p>
+    </div>
+    <div class="testi-grid">
+      <div class="testi-card reveal">
+        <div class="testi-stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
+        <p class="testi-quote">Our reception used to be the biggest bottleneck in the hospital. Since the patient flow system went live, patients move to triage far faster and the front desk isn't overwhelmed anymore.</p>
+        <div class="testi-person"><div class="testi-avatar">HN</div><div><strong>Head Nurse, Outpatient Dept.</strong><span>Regional Referral Facility</span></div></div>
+      </div>
+      <div class="testi-card reveal reveal-delay-1">
+        <div class="testi-stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
+        <p class="testi-quote">I can see my full queue from my consultation room without calling reception. It's changed how quickly I move between patients during busy mornings.</p>
+        <div class="testi-person"><div class="testi-avatar">MD</div><div><strong>Medical Officer</strong><span>Outpatient Clinic</span></div></div>
+      </div>
+      <div class="testi-card reveal reveal-delay-2">
+        <div class="testi-stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i></div>
+        <p class="testi-quote">The reporting dashboard gives us visibility we never had before &mdash; we finally know exactly where patients spend the most time waiting.</p>
+        <div class="testi-person"><div class="testi-avatar">HA</div><div><strong>Hospital Administrator</strong><span>Healthcare Facility Network</span></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section-pad bg-mist" id="faq">
+  <div class="container">
+    <div class="section-head center reveal" style="margin-left:auto;margin-right:auto;">
+      <div class="section-tag" style="margin-left:auto;margin-right:auto;display:table;"><i class="fa-solid fa-circle-question"></i> FAQ</div>
+      <h2>Frequently asked questions</h2>
+      <p>Everything hospital administrators usually ask before rolling out MediFlow.</p>
+    </div>
+    <div class="faq-list reveal">
+      <div class="faq-item open">
+        <button class="faq-q">How does the system work? <i class="fa-solid fa-plus"></i></button>
+        <div class="faq-a"><p>Each patient enters the workflow at reception. As they move through registration, triage, doctor consultation, laboratory and pharmacy, their entry updates automatically so every department sees the same live status.</p></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q">Can multiple departments use it? <i class="fa-solid fa-plus"></i></button>
+        <div class="faq-a"><p>Yes. Reception, triage, doctor consultation rooms, laboratory and pharmacy each have their own dashboard connected to the same shared architecture, so handoffs between departments happen seamlessly.</p></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q">Can patients be tracked in real time? <i class="fa-solid fa-plus"></i></button>
+        <div class="faq-a"><p>Every stage of a patient's visit is timestamped and visible on the relevant dashboard, so staff and administrators always know where a patient currently is in the flow.</p></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q">Is it suitable for larger hospitals? <i class="fa-solid fa-plus"></i></button>
+        <div class="faq-a"><p>Yes. MediFlow is designed for high-volume referral hospitals as well as smaller clinics, with role-based access so large staff teams can use it without confusion.</p></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q">Does it require special hardware? <i class="fa-solid fa-plus"></i></button>
+        <div class="faq-a"><p>No special hardware is required beyond standard computers or tablets at each station and an optional display screen for the public status TV view.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section-pad" id="contact">
+  <div class="container">
+    <div class="section-head reveal">
+      <div class="section-tag"><i class="fa-solid fa-envelope"></i> Get In Touch</div>
+      <h2>Let's bring MediFlow to your hospital</h2>
+      <p>Reach out for a live demonstration, pricing, or a technical walkthrough with our implementation team.</p>
+    </div>
+
+    <div class="contact-grid">
+      <div class="reveal">
+        <div class="contact-info-item"><div class="ci-icon"><i class="fa-solid fa-phone"></i></div><div><h4>Phone</h4><p>+254 700 000 000</p></div></div>
+        <div class="contact-info-item"><div class="ci-icon"><i class="fa-solid fa-envelope"></i></div><div><h4>Email</h4><p>info@mediflow-system.com</p></div></div>
+        <div class="contact-info-item"><div class="ci-icon"><i class="fa-solid fa-location-dot"></i></div><div><h4>Location</h4><p>Medical Systems Division,<br>Eldoret, Kenya</p></div></div>
+        <div class="contact-info-item"><div class="ci-icon"><i class="fa-solid fa-clock"></i></div><div><h4>Support Hours</h4><p>Monday &ndash; Saturday, 7:00 AM &ndash; 8:00 PM</p></div></div>
+      </div>
+
+      <div class="reveal reveal-delay-1">
+        <div class="contact-form">
+          <form id="contactForm">
+            <div class="form-row">
+              <div class="field"><label>Full Name</label><input type="text" placeholder="e.g. Jane Wanjiru" required></div>
+              <div class="field"><label>Facility Name</label><input type="text" placeholder="e.g. County Referral Hospital" required></div>
+            </div>
+            <div class="form-row">
+              <div class="field"><label>Email Address</label><input type="email" placeholder="you@hospital.com" required></div>
+              <div class="field"><label>Phone Number</label><input type="tel" placeholder="+254 7XX XXX XXX" required></div>
+            </div>
+            <div class="dropdown field">
+              <label>What are you interested in?</label>
+              <select>
+                <option>Requesting a live demo</option>
+                <option>Pricing information</option>
+                <option>Technical integration questions</option>
+                <option>General inquiry</option>
+              </select>
+            </div>
+            <div class="field"><label>Message</label><textarea placeholder="Tell us a bit about your facility and needs&hellip;"></textarea></div>
+            <button type="submit" class="btn btn-primary btn-lg" style="width:100%;">Send Message</button>
+            <p class="form-note">We typically respond within one business day.</p>
+          </form>
+          <div class="form-success" id="formSuccess">
+            <i class="fa-solid fa-circle-check"></i>
+            <h4>Message received</h4>
+            <p>Thanks for reaching out &mdash; our team will contact you shortly to schedule your live demo.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="#home" class="brand"><span class="brand-mark"><i class="fa-solid fa-heart-pulse"></i></span><span>MediFlow</span></a>
+        <p>Smart Hospital Patient Flow Management System &mdash; from reception to visit completion.</p>
+        <div class="footer-social">
+          <a href="#" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+          <a href="#" aria-label="Twitter/X"><i class="fa-brands fa-x-twitter"></i></a>
+          <a href="#" aria-label="LinkedIn"><i class="fa-brands fa-linkedin-in"></i></a>
+          <a href="#" aria-label="YouTube"><i class="fa-brands fa-youtube"></i></a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h5>Quick Links</h5>
+        <a href="#home">Home</a>
+        <a href="#workflow">Workflow</a>
+        <a href="#demo">Demo</a>
+        <a href="#contact">Contact</a>
+      </div>
+      <div class="footer-col">
+        <h5>Product</h5>
+        <a href="#features">Features</a>
+        <a href="#dashboards">Dashboards</a>
+        <a href="#benefits">Benefits</a>
+        <a href="#faq">FAQ</a>
+      </div>
+      <div class="footer-col">
+        <h5>Company</h5>
+        <a href="#">About</a>
+        <a href="#contact">Contact</a>
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms of Service</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>&copy; <span id="year"></span> MediFlow. All rights reserved.</span>
+      <span>Enterprise Patient Flow Architecture</span>
+    </div>
+  </div>
+</footer>
+
+<a href="#demo" class="float-demo" id="floatDemo"><i class="fa-solid fa-calendar-check"></i> Request Demo</a>
+
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+
+  // ---- Loader ----
+  window.addEventListener('load', function(){
+    setTimeout(function(){
+      document.getElementById('loader').classList.add('hidden');
+    }, 500);
+  });
+  // fallback in case load already fired
+  setTimeout(function(){document.getElementById('loader').classList.add('hidden');}, 2500);
+
+  // ---- Year ----
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  // ---- Header scroll state + progress bar ----
+  var header = document.getElementById('siteHeader');
+  var progress = document.getElementById('scrollProgress');
+  var floatDemo = document.getElementById('floatDemo');
+
+  function onScroll(){
+    var y = window.scrollY || window.pageYOffset;
+    header.classList.toggle('scrolled', y > 10);
+    var docH = document.documentElement.scrollHeight - window.innerHeight;
+    progress.style.width = (docH > 0 ? (y/docH)*100 : 0) + '%';
+    floatDemo.classList.toggle('show', y > 500);
+  }
+  document.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+
+  // ---- Mobile drawer ----
+  var toggle = document.getElementById('navToggle');
+  var drawer = document.getElementById('mobileDrawer');
+  var overlay = document.getElementById('drawerOverlay');
+  function closeDrawer(){drawer.classList.remove('open');overlay.classList.remove('open');}
+  toggle.addEventListener('click', function(){
+    drawer.classList.toggle('open');
+    overlay.classList.toggle('open');
+  });
+  overlay.addEventListener('click', closeDrawer);
+  drawer.querySelectorAll('a').forEach(function(a){a.addEventListener('click', closeDrawer);});
+
+  // ---- Scroll reveal ----
+  var revealEls = document.querySelectorAll('.reveal');
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }
+    });
+  }, {threshold:0.12, rootMargin:'0px 0px -40px 0px'});
+  revealEls.forEach(function(el){ io.observe(el); });
+
+  // ---- Dashboard tabs ----
+  var tabs = document.querySelectorAll('.dash-tab');
+  var panels = document.querySelectorAll('.dash-panel');
+  tabs.forEach(function(tab){
+    tab.addEventListener('click', function(){
+      tabs.forEach(function(t){t.classList.remove('active');});
+      panels.forEach(function(p){p.classList.remove('active');});
+      tab.classList.add('active');
+      document.getElementById('panel-' + tab.dataset.tab).classList.add('active');
+    });
+  });
+
+  // ---- FAQ accordion ----
+  document.querySelectorAll('.faq-q').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var item = btn.parentElement;
+      var wasOpen = item.classList.contains('open');
+      document.querySelectorAll('.faq-item').forEach(function(i){i.classList.remove('open');});
+      if(!wasOpen){ item.classList.add('open'); }
+    });
+  });
+
+  // ---- Animated stat counters ----
+  var counters = document.querySelectorAll('.counter');
+  var counterIO = new IntersectionObserver(function(entries){
+    entries.forEach(function(entry){
+      if(!entry.isIntersecting) return;
+      var el = entry.target;
+      var target = parseFloat(el.dataset.target);
+      var decimals = parseInt(el.dataset.decimals || '0', 10);
+      var duration = 1600;
+      var start = null;
+      function step(ts){
+        if(!start) start = ts;
+        var progressT = Math.min((ts - start) / duration, 1);
+        var eased = 1 - Math.pow(1 - progressT, 3);
+        var val = target * eased;
+        el.textContent = decimals ? val.toFixed(decimals) : Math.floor(val);
+        if(progressT < 1){ requestAnimationFrame(step); }
+        else { el.textContent = decimals ? target.toFixed(decimals) : target; }
+      }
+      requestAnimationFrame(step);
+      counterIO.unobserve(el);
+    });
+  }, {threshold:0.5});
+  counters.forEach(function(el){ counterIO.observe(el); });
+
+  // ---- TV clock ----
+  var tvClock = document.getElementById('tvClock');
+  function updateClock(){
+    if(!tvClock) return;
+    var d = new Date();
+    var pad = function(n){return n.toString().padStart(2,'0');};
+    tvClock.textContent = pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds());
+  }
+  updateClock();
+  setInterval(updateClock, 1000);
+
+  // ---- Hero journey rail auto-advance (visual only) ----
+  var stages = document.querySelectorAll('#heroRail .rail-stage');
+  var activeIdx = 2; // starts at Triage (index 2) per markup
+  setInterval(function(){
+    if(activeIdx >= stages.length) return;
+    stages[activeIdx].classList.remove('active');
+    stages[activeIdx].classList.add('done');
+    var infoIcon = stages[activeIdx].querySelector('.node');
+    infoIcon.innerHTML = '<i class="fa-solid fa-check"></i>';
+    var tokenEl = stages[activeIdx].querySelector('.rail-token');
+    if(tokenEl) tokenEl.remove();
+    activeIdx++;
+    if(activeIdx < stages.length){
+      stages[activeIdx].classList.add('active');
+      var span = stages[activeIdx].querySelector('.rail-info span');
+      if(span) span.textContent = 'In progress';
+    } else {
+      // reset cycle after a pause
+      setTimeout(function(){
+        stages.forEach(function(s, i){
+          s.classList.remove('active','done');
+          var node = s.querySelector('.node');
+          if(i < 2){
+            s.classList.add('done');
+            node.innerHTML = '<i class="fa-solid fa-check"></i>';
+          } else if(i === 2){
+            s.classList.add('active');
+            node.innerHTML = '<i class="fa-solid fa-stethoscope"></i>';
+          }
+        });
+        activeIdx = 2;
+      }, 2000);
+    }
+  }, 3200);
+
+  // ---- Contact form (no backend, front-end only) ----
+  var form = document.getElementById('contactForm');
+  var success = document.getElementById('formSuccess');
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    form.style.display = 'none';
+    success.style.display = 'block';
+  });
+
+});
+</script>
+
+</body>
+</html>
