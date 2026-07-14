@@ -1,91 +1,577 @@
-{% extends "base.html" %}
 
 {% block content %}
+<style>
+    /* Design Tokens & Theme Variables */
+    :root {
+        --mf-primary: #0D6EFD;
+        --mf-primary-gradient: linear-gradient(135deg, #0D6EFD 0%, #084298 100%);
+        --mf-secondary-blue: #084298;
+        --mf-accent: #17A2B8;
+        --mf-background: #F5F9FC;
+        --mf-surface: #FFFFFF;
+        
+        /* Status Semantics */
+        --mf-status-waiting: #FF9800;
+        --mf-status-serving: #0D6EFD;
+        --mf-status-completed: #198754;
+        --mf-status-emergency: #DC3545;
+        
+        /* Layout Tokens */
+        --mf-radius-lg: 16px;
+        --mf-radius-md: 12px;
+        --mf-radius-sm: 8px;
+        --mf-shadow-sm: 0 4px 6px -1px rgba(8, 66, 152, 0.03), 0 2px 4px -1px rgba(8, 66, 152, 0.02);
+        --mf-shadow-md: 0 10px 15px -3px rgba(8, 66, 152, 0.06), 0 4px 6px -2px rgba(8, 66, 152, 0.03);
+        --mf-shadow-lg: 0 20px 25px -5px rgba(8, 66, 152, 0.08), 0 10px 10px -5px rgba(8, 66, 152, 0.04);
+        --mf-transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
 
-<div class="container mt-4">
+    /* Core Layout Wrapper */
+    .dashboard-wrapper {
+        background-color: var(--mf-background);
+        min-height: 100vh;
+        padding: 2rem 1.5rem 4rem 1.5rem;
+        animation: pageFadeIn 0.4s ease-out;
+    }
 
-    <div class="card shadow">
+    /* Animations */
+    @keyframes pageFadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes pulsePulse {
+        0% { transform: scale(0.95); opacity: 0.5; }
+        50% { transform: scale(1.05); opacity: 1; }
+        100% { transform: scale(0.95); opacity: 0.5; }
+    }
 
-        <div class="card-header bg-success text-white">
-            <h4>Patients Waiting for Triage</h4>
-        </div>
+    /* Premium Component Header */
+    .mediflow-dashboard-header {
+        background: #ffffff;
+        border-radius: var(--mf-radius-lg);
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: var(--mf-shadow-md);
+        border-left: 5px solid var(--mf-primary);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1.5rem;
+    }
 
-        <div class="card-body">
+    .header-branding-zone {
+        display: flex;
+        align-items: center;
+        gap: 1.25rem;
+    }
 
-            {% if visits %}
+    .header-icon-container {
+        width: 56px;
+        height: 56px;
+        background: var(--mf-primary-gradient);
+        border-radius: var(--mf-radius-md);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.5rem;
+        box-shadow: 0 4px 12px rgba(13, 110, 253, 0.25);
+    }
 
-            <table class="table table-hover table-striped align-middle">
+    .header-text-block h1 {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: var(--mf-secondary-blue);
+        margin: 0 0 0.25rem 0;
+        letter-spacing: -0.02em;
+    }
 
-                <thead class="table-light">
+    .header-text-block p {
+        color: #5c6f84;
+        margin: 0;
+        font-size: 0.95rem;
+    }
 
-                    <tr>
-                        <th>Queue</th>
-                        <th>Hospital ID</th>
-                        <th>Patient</th>
-                        <th>Arrival Time</th>
-                        <th></th>
-                    </tr>
+    .live-status-indicator {
+        background-color: #eef5ff;
+        border: 1px solid #d0e3ff;
+        padding: 0.5rem 1rem;
+        border-radius: var(--mf-radius-pill, 50px);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--mf-primary);
+    }
 
-                </thead>
+    .live-dot {
+        width: 8px;
+        height: 8px;
+        background-color: var(--mf-primary);
+        border-radius: 50%;
+        animation: pulsePulse 2s infinite ease-in-out;
+    }
 
-                <tbody>
+    /* Analytics Summary Cards Grid */
+    .analytics-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
 
-                {% for visit in visits %}
+    .summary-card {
+        background: var(--mf-surface);
+        border-radius: var(--mf-radius-lg);
+        padding: 1.5rem;
+        box-shadow: var(--mf-shadow-sm);
+        border: 1px solid rgba(8, 66, 152, 0.04);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        transition: var(--mf-transition);
+        position: relative;
+        overflow: hidden;
+    }
 
-                    <tr>
+    .summary-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--mf-shadow-lg);
+        border-color: rgba(13, 110, 253, 0.15);
+    }
 
-                        <td>
-                            <span class="badge bg-primary fs-6">
-                                {{ visit.queue_number }}
-                            </span>
-                        </td>
+    .card-metric-label {
+        font-size: 0.85rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: #7a8c9f;
+        margin-bottom: 0.5rem;
+    }
 
-                        <td>
-                            {{ visit.patient.hospital_id }}
-                        </td>
+    .card-metric-value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--mf-secondary-blue);
+        line-height: 1;
+    }
 
-                        <td>
-                            {{ visit.patient.first_name }}
-                            {{ visit.patient.last_name }}
-                        </td>
+    .card-metric-icon-box {
+        width: 48px;
+        height: 48px;
+        border-radius: var(--mf-radius-md);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.25rem;
+    }
 
-                        <td>
-                            {{ visit.visit_date|time:"H:i" }}
-                        </td>
+    /* Color Variations for Analytics Cards */
+    .card-variant-waiting { border-top: 4px solid var(--mf-status-waiting); }
+    .card-variant-waiting .card-metric-icon-box { background-color: #fff4e5; color: var(--mf-status-waiting); }
+    
+    .card-variant-serving { border-top: 4px solid var(--mf-status-serving); }
+    .card-variant-serving .card-metric-icon-box { background-color: #eef5ff; color: var(--mf-status-serving); }
+    
+    .card-variant-completed { border-top: 4px solid var(--mf-status-completed); }
+    .card-variant-completed .card-metric-icon-box { background-color: #e6f4ea; color: var(--mf-status-completed); }
+    
+    .card-variant-time { border-top: 4px solid var(--mf-accent); }
+    .card-variant-time .card-metric-icon-box { background-color: #e1f7f9; color: var(--mf-accent); }
 
-                        <td>
+    /* Core Queue Workspace Board Container */
+    .queue-board-card {
+        background: var(--mf-surface);
+        border-radius: var(--mf-radius-lg);
+        box-shadow: var(--mf-shadow-md);
+        border: 1px solid rgba(8, 66, 152, 0.04);
+        overflow: hidden;
+    }
 
-                            <a href="{% url 'triage' visit.id %}"
-                               class="btn btn-success">
+    .queue-board-title-bar {
+        padding: 1.5rem 2rem;
+        background-color: #ffffff;
+        border-bottom: 1px solid #edf2f7;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
 
-                                Start Triage
+    .queue-board-title-bar h2 {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: var(--mf-secondary-blue);
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
 
-                            </a>
+    /* Redesigned Structured Datatable Layout */
+    .mediflow-data-table-container {
+        overflow-x: auto;
+    }
 
-                        </td>
+    .mediflow-premium-table {
+        width: 100%;
+        border-collapse: collapse;
+        text-align: left;
+        vertical-align: middle;
+    }
 
-                    </tr>
+    .mediflow-premium-table th {
+        background-color: #f8fafc;
+        padding: 1rem 1.5rem;
+        font-size: 0.85rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: #4a5568;
+        border-bottom: 2px solid #edf2f7;
+    }
 
-                {% endfor %}
+    .mediflow-premium-table td {
+        padding: 1.2rem 1.5rem;
+        border-bottom: 1px solid #f1f5f9;
+        color: #334155;
+        font-size: 0.95rem;
+        transition: var(--mf-transition);
+    }
 
-                </tbody>
+    .mediflow-premium-table tbody tr {
+        transition: var(--mf-transition);
+    }
 
-            </table>
+    .mediflow-premium-table tbody tr:hover {
+        background-color: #f4f8fd;
+    }
 
-            {% else %}
+    /* Component Badges */
+    .queue-badge-premium {
+        background: var(--mf-primary-gradient);
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: var(--mf-radius-sm);
+        font-family: 'IBM Plex Mono', monospace;
+        font-weight: 700;
+        font-size: 1rem;
+        display: inline-block;
+        box-shadow: 0 2px 6px rgba(13, 110, 253, 0.15);
+        letter-spacing: 0.02em;
+    }
 
-                <div class="alert alert-info">
+    .hospital-id-text {
+        font-family: 'IBM Plex Mono', monospace;
+        font-weight: 600;
+        color: #4a5568;
+        background-color: #f1f5f9;
+        padding: 0.25rem 0.6rem;
+        border-radius: 6px;
+        font-size: 0.85rem;
+    }
 
-                    No patients are currently waiting for triage.
+    .patient-name-container {
+        font-weight: 600;
+        color: var(--mf-secondary-blue);
+    }
 
+    .time-stamp-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.9rem;
+        color: #4a5568;
+        font-weight: 500;
+    }
+
+    .status-badge-waiting {
+        background-color: #fff4e5;
+        color: #b76e00;
+        border: 1px solid #ffe3bc;
+        padding: 0.4rem 0.8rem;
+        border-radius: 50px;
+        font-size: 0.8rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .status-badge-waiting::before {
+        content: '';
+        width: 6px;
+        height: 6px;
+        background-color: var(--mf-status-waiting);
+        border-radius: 50%;
+    }
+
+    /* Action Button Custom Styling Overrides */
+    .btn-mediflow-action {
+        background: var(--mf-primary-gradient);
+        color: #ffffff !important;
+        border: none;
+        padding: 0.65rem 1.25rem;
+        font-weight: 600;
+        font-size: 0.9rem;
+        border-radius: var(--mf-radius-sm);
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        text-decoration: none !important;
+        box-shadow: 0 4px 10px rgba(13, 110, 253, 0.2);
+        transition: var(--mf-transition);
+        cursor: pointer;
+    }
+
+    .btn-mediflow-action:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 14px rgba(13, 110, 253, 0.3);
+        background: linear-gradient(135deg, #0b5ed7 0%, #0a3678 100%);
+    }
+
+    .btn-mediflow-action:active {
+        transform: translateY(0);
+    }
+
+    /* Enhanced Clinical Empty State Display Layout */
+    .mediflow-empty-state-card {
+        padding: 5rem 2rem;
+        text-align: center;
+        max-width: 480px;
+        margin: 0 auto;
+    }
+
+    .empty-state-illustration-box {
+        width: 100px;
+        height: 100px;
+        background-color: #eef5ff;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 2rem auto;
+        color: var(--mf-primary);
+        font-size: 3rem;
+        border: 2px dashed rgba(13, 110, 253, 0.2);
+    }
+
+    .mediflow-empty-state-card h3 {
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: var(--mf-secondary-blue);
+        margin-bottom: 0.75rem;
+    }
+
+    .mediflow-empty-state-card p {
+        color: #64748b;
+        font-size: 0.95rem;
+        line-height: 1.6;
+        margin: 0;
+    }
+
+    /* Adaptive Grid Responsive Framework Overrides */
+    @media (max-width: 1200px) {
+        .analytics-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @media (max-width: 768px) {
+        .dashboard-wrapper {
+            padding: 1rem 0.75rem;
+        }
+        .mediflow-dashboard-header {
+            padding: 1.5rem;
+        }
+        .analytics-grid {
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+        
+        /* Force table off screen processing scroll responsiveness */
+        .mediflow-premium-table thead {
+            display: none; /* Mobile view optimized layout */
+        }
+        
+        .mediflow-premium-table tbody tr {
+            display: block;
+            border: 1px solid #e2e8f0;
+            border-radius: var(--mf-radius-md);
+            margin-bottom: 1rem;
+            padding: 1rem;
+            background-color: #fff;
+        }
+
+        .mediflow-premium-table td {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+            border-bottom: 1px dashed #f1f5f9;
+        }
+
+        .mediflow-premium-table td:last-child {
+            border-bottom: none;
+            padding-top: 1rem;
+            justify-content: center;
+        }
+
+        .mediflow-premium-table td::before {
+            content: attr(data-label);
+            font-weight: 700;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            color: #64748b;
+        }
+    }
+</style>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<div class="dashboard-wrapper">
+    <div class="container-fluid p-0">
+        
+        <header class="mediflow-dashboard-header">
+            <div class="header-branding-zone">
+                <div class="header-icon-container">
+                    <i class="fa-solid fa-heart-pulse"></i>
                 </div>
+                <div class="header-text-block">
+                    <h1>Triage Dashboard</h1>
+                    <p>Real-time patient queue management &amp; clinical vitals initialization workspace.</p>
+                </div>
+            </div>
+            <div class="live-status-indicator">
+                <div class="live-dot"></div>
+                <span>Live Feed Sync Active</span>
+            </div>
+        </header>
 
-            {% endif %}
+        <section class="analytics-grid" aria-label="Queue Analytics Summary">
+            <div class="summary-card card-variant-waiting">
+                <div>
+                    <div class="card-metric-label">Patients Waiting</div>
+                    <div class="card-metric-value">{% if visits %}{{ visits|length }}{% else %}0{% endif %}</div>
+                </div>
+                <div class="card-metric-icon-box">
+                    <i class="fa-solid fa-hourglass-half"></i>
+                </div>
+            </div>
+            
+            <div class="summary-card card-variant-serving">
+                <div>
+                    <div class="card-metric-label">Active Serving</div>
+                    <div class="card-metric-value">--</div>
+                </div>
+                <div class="card-metric-icon-box">
+                    <i class="fa-solid fa-user-doctor"></i>
+                </div>
+            </div>
+            
+            <div class="summary-card card-variant-completed">
+                <div>
+                    <div class="card-metric-label">Served Today</div>
+                    <div class="card-metric-value">--</div>
+                </div>
+                <div class="card-metric-icon-box">
+                    <i class="fa-solid fa-circle-check"></i>
+                </div>
+            </div>
+            
+            <div class="summary-card card-variant-time">
+                <div>
+                    <div class="card-metric-label">Avg Wait Time</div>
+                    <div class="card-metric-value">--</div>
+                </div>
+                <div class="card-metric-icon-box">
+                    <i class="fa-solid fa-clock"></i>
+                </div>
+            </div>
+        </section>
 
+        <div class="queue-board-card">
+            <div class="queue-board-title-bar">
+                <h2>
+                    <i class="fa-solid fa-list-ol text-primary"></i>
+                    <span>Triage Patient Intake Stream</span>
+                </h2>
+            </div>
+
+            <div class="card-body p-0">
+                {% if visits %}
+                <div class="mediflow-data-table-container">
+                    <table class="mediflow-premium-table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Queue Number</th>
+                                <th scope="col">Hospital ID</th>
+                                <th scope="col">Patient Name</th>
+                                <th scope="col">Arrival Time</th>
+                                <th scope="col">Status</th>
+                                <th scope="col" style="text-align: right;">Action Control</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% for visit in visits %}
+                            <tr>
+                                <td data-label="Queue Number">
+                                    <span class="queue-badge-premium">
+                                        {{ visit.queue_number }}
+                                    </span>
+                                </td>
+                                
+                                <td data-label="Hospital ID">
+                                    <span class="hospital-id-text">
+                                        <i class="fa-solid fa-id-card-clip" style="opacity: 0.5; margin-right: 4px;"></i>{{ visit.patient.hospital_id }}
+                                    </span>
+                                </td>
+                                
+                                <td data-label="Patient Name">
+                                    <div class="patient-name-container">
+                                        {{ visit.patient.first_name }} {{ visit.patient.last_name }}
+                                    </div>
+                                </td>
+                                
+                                <td data-label="Arrival Time">
+                                    <div class="time-stamp-badge">
+                                        <i class="fa-regular fa-clock text-muted"></i>
+                                        <span>{{ visit.visit_date|time:"H:i" }}</span>
+                                    </div>
+                                </td>
+
+                                <td data-label="Status">
+                                    <span class="status-badge-waiting">
+                                        Waiting
+                                    </span>
+                                </td>
+                                
+                                <td data-label="Action Control" style="text-align: right;">
+                                    <a href="{% url 'triage' visit.id %}" class="btn-mediflow-action">
+                                        <i class="fa-solid fa-notes-medical"></i>
+                                        <span>Start Triage</span>
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="mediflow-empty-state-card">
+                    <div class="empty-state-illustration-box">
+                        <i class="fa-solid fa-hospital-user"></i>
+                    </div>
+                    <h3>No Patients Waiting</h3>
+                    <p>There are currently no patients checked into the queue waiting for triage assessment. Fresh intakes will automatically populate here.</p>
+                </div>
+                {% endif %}
+            </div>
         </div>
 
     </div>
-
 </div>
-
 {% endblock %}

@@ -136,7 +136,7 @@ def start_visit(request):
 
             messages.success(request, "Visit started successfully.")
 
-            return redirect("triage_dashboard")  # Redirect to the triage page after starting the visit
+            return redirect("triage_gdashboard")  # Redirect to the triage page after starting the visit
 
     return render(
         request,
@@ -163,9 +163,11 @@ def triage(request, visit_id):
             visit.save()
             messages.success(request, "Triage information saved successfully.")
             return redirect("triage_dashboard")  # Redirect to a success page or another view
+        else:
+            messages.error(request, "Please correct the errors below.")
     else:
         form = TriageForm()
-        messages.error(request, "Please correct the errors below.")
+       
     return render(request, "triage.html", {"form": form, "visit": visit})
 
 def doctor_consultation(request, visit_id):
